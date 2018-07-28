@@ -6,5 +6,7 @@ package com.vandenbreemen.linalg.api;
 public interface Matrix {
 
 
+    int rows();
 
+    int cols();
 }
