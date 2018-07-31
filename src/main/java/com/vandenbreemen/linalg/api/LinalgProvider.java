@@ -17,4 +17,10 @@ public interface LinalgProvider {
      */
     Matrix getMatrix(int rows, int columns);
 
+    /**
+     * Get vector with the given set of entries
+     * @param entries
+     * @return
+     */
+    Vector getVector(double[] entries);
 }
