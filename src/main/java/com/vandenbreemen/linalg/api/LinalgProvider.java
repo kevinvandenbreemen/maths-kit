@@ -23,4 +23,10 @@ public interface LinalgProvider {
      * @return
      */
     Vector getVector(double[] entries);
+
+    /**
+     * Get operations that can be performed on matrices/vectors/etc
+     * @return
+     */
+    LinalgOperations getOperations();
 }
