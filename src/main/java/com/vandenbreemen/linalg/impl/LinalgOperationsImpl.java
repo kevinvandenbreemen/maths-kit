@@ -4,6 +4,8 @@ import com.vandenbreemen.linalg.api.LinalgOperations;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
 
+import java.util.Random;
+
 public class LinalgOperationsImpl implements LinalgOperations {
     @Override
     public Vector hadamard(Vector v1, Vector v2) {
@@ -48,5 +50,16 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
 
         return new VectorImpl(result);
+    }
+
+    @Override
+    public Matrix randomEntries(Matrix matrix) {
+        Random random = new Random(System.nanoTime());
+        for(int i=0; i<matrix.rows(); i++){
+            for(int j=0; j<matrix.cols(); j++){
+                matrix.set(i, j, random.nextDouble());
+            }
+        }
+        return matrix;
     }
 }
