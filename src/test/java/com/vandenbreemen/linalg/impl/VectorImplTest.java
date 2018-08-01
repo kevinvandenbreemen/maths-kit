@@ -30,4 +30,19 @@ public class VectorImplTest {
         assertEquals("Second Entry", 6.0, hadamard.entry(1));
     }
 
+    @Test
+    public void shouldAddVectors(){
+
+        //  Arrange
+        Vector v1 = provider.getVector(new double[]{2,3});
+        Vector v2 = provider.getVector(new double[]{3,3});
+
+        //  Act
+        Vector sum = provider.getOperations().add(v1, v2);
+
+        //  Assert
+        assertEquals(5.0, sum.entry(0));
+        assertEquals(6.0, sum.entry(1));
+    }
+
 }
