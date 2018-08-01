@@ -13,6 +13,4 @@ public interface Matrix {
     double get(int row, int col);
 
     void set(int row, int col, double value);
-
-    double[] matrixVectorProduct(double[] vector);
 }

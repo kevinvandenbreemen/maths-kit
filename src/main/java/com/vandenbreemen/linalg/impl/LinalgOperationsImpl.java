@@ -1,6 +1,7 @@
 package com.vandenbreemen.linalg.impl;
 
 import com.vandenbreemen.linalg.api.LinalgOperations;
+import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
 
 public class LinalgOperationsImpl implements LinalgOperations {
@@ -15,5 +16,23 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
 
         return new VectorImpl(product);
+    }
+
+    @Override
+    public Vector matrixVectorProduct(Matrix m, Vector v) {
+        if(v.length() != m.cols()){
+            throw new RuntimeException("Vector must have same number of entries as columns ("+m.cols()+")");
+        }
+
+        double[] result = new double[m.rows()];
+        for(int i=0; i<m.rows(); i++){
+            double sum = 0.;
+            for(int j=0; j<m.cols(); j++){
+                sum += m.get(i,j) * v.entry(j);
+            }
+            result[i] = sum;
+        }
+
+        return new VectorImpl(result);
     }
 }
