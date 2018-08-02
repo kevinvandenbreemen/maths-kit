@@ -3,6 +3,7 @@ package com.vandenbreemen.linalg.impl;
 import com.vandenbreemen.linalg.api.LinalgOperations;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
+import com.vandenbreemen.linalg.api.VectorFunction;
 
 import java.util.Random;
 
@@ -71,5 +72,14 @@ public class LinalgOperationsImpl implements LinalgOperations {
             values[i] = random.nextDouble();
         }
         return new VectorImpl(values);
+    }
+
+    @Override
+    public Vector function(Vector vector, VectorFunction function) {
+        double[] result = new double[vector.length()];
+        for(int i=0; i<vector.length(); i++){
+            result[i] = function.operate(vector.entry(i));
+        }
+        return new VectorImpl(result);
     }
 }

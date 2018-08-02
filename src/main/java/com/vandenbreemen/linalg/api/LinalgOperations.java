@@ -10,4 +10,6 @@ public interface LinalgOperations {
     Matrix randomEntries(Matrix matrix);
 
     Vector randomEntries(Vector vector);
+
+    Vector function(Vector vector, VectorFunction function);
 }

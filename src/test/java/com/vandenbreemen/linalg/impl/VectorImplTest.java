@@ -45,4 +45,20 @@ public class VectorImplTest {
         assertEquals(6.0, sum.entry(1));
     }
 
+    @Test
+    public void shouldOperateOnVector(){
+
+        //  Arrange
+        Vector vector = provider.getVector(new double[]{3, 5, 6});
+
+        //  Act
+        Vector operated = provider.getOperations().function(vector, (e)->e*2);
+
+        //  Assert
+        assertEquals(6.0, operated.entry(0));
+        assertEquals(10.0, operated.entry(1));
+        assertEquals(12.0, operated.entry(2));
+
+    }
+
 }
