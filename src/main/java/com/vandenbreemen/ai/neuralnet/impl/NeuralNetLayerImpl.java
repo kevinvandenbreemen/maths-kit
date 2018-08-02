@@ -32,4 +32,14 @@ public class NeuralNetLayerImpl implements NeuralNetLayer {
         weightedInputs = linalgProvider.getOperations().add(weightedInputs, biasVector);
         return linalgProvider.getOperations().function(weightedInputs, activationFunction);
     }
+
+    @Override
+    public int getNumInputs() {
+        return weightMatrix.cols();
+    }
+
+    @Override
+    public int getNumOutputs() {
+        return weightMatrix.rows();
+    }
 }

@@ -6,4 +6,7 @@ public interface NeuralNetLayer {
 
     Vector getActivation(Vector input);
 
+    int getNumInputs();
+
+    int getNumOutputs();
 }
