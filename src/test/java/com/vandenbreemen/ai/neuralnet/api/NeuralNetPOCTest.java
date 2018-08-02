@@ -1,6 +1,7 @@
 package com.vandenbreemen.ai.neuralnet.api;
 
 import com.vandenbreemen.ai.neuralnet.impl.NeuralNetLayerImpl;
+import com.vandenbreemen.ai.neuralnet.impl.QuadraticCostFunction;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
@@ -9,7 +10,11 @@ import com.vandenbreemen.linalg.impl.SigmoidFunction;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
+
 
 public class NeuralNetPOCTest {
 
@@ -75,6 +80,33 @@ public class NeuralNetPOCTest {
         System.out.println(cost);
     }
 
+    @Test
+    public void shouldCalculateQuadraticCostFunctionForMultipleTrainingExamples(){
 
+        //  Arrange
+        TrainingExample example1 = new TrainingExample(
+                linalgProvider.getVector(new double[]{0,1}), linalgProvider.getVector(new double[]{1, 0})
+        );
+        TrainingExample example2 = new TrainingExample(
+                linalgProvider.getVector(new double[]{1,1}), linalgProvider.getVector(new double[]{0, 0})
+        );
+        example1.setActualOutput(linalgProvider.getVector(new double[]{0.8, -0.002}));
+        example2.setActualOutput(linalgProvider.getVector(new double[]{1.1, 0.3}));
+        List<TrainingExample> examples = Arrays.asList(example1, example2);
+
+        //  Act
+        double sum = 0.0;
+        for(TrainingExample example: examples){
+            Vector difference = linalgProvider.getOperations().subtract(example.getOutput(), example.getActualOutput());
+            double magnitude = linalgProvider.getOperations().norm(difference);
+            sum += magnitude;
+        }
+
+        double cost = (1./(2.*examples.size())) * sum;
+        System.out.println(cost);
+
+        assertEquals(cost, new QuadraticCostFunction(linalgProvider).cost(examples.toArray(new TrainingExample[examples.size()])));
+
+    }
 
 }
