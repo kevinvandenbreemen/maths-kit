@@ -3,6 +3,8 @@ package com.vandenbreemen.ai.neuralnet.impl;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNet;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetLayer;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetProvider;
+import com.vandenbreemen.linalg.api.LinalgProvider;
+import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,9 +15,12 @@ public class NeuralNetImplTest {
 
     private NeuralNetProvider neuralNetProvider;
 
+    private LinalgProvider linalgProvider;
+
     @Before
     public void setup(){
-        this.neuralNetProvider = new NeuralNetProviderImpl(new LinalgProviderImpl());
+        this.linalgProvider = new LinalgProviderImpl();
+        this.neuralNetProvider = new NeuralNetProviderImpl(linalgProvider);
     }
 
     @Test
@@ -48,6 +53,23 @@ public class NeuralNetImplTest {
         //  Assert
         assertEquals("Layer Inputs", layer.getNumInputs(), 3);
         assertEquals("Layer Outputs", 5, layer.getNumOutputs());
+    }
+
+    @Test
+    public void shouldFeedForward(){
+        //  Arrange
+        NeuralNet net = neuralNetProvider.getNeuralNet(2);
+        net.addLayer(neuralNetProvider.createLayer(net, 3));
+        net.addLayer(neuralNetProvider.createLayer(net, 2));
+
+        //  Act
+        Vector output = net.getOutout(
+            linalgProvider.getVector(new double[]{0.0, 1.0})
+        );
+
+        //  Do something
+        System.out.println(output);
+        assertEquals("Entries", 2, output.length());
     }
 
 }

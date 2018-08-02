@@ -22,6 +22,15 @@ public class LinalgProviderImpl implements LinalgProvider {
     }
 
     @Override
+    public Vector copyVector(Vector vector) {
+        double[] values = new double[vector.length()];
+        for(int i=0; i<vector.length(); i++){
+            values[i] = vector.entry(i);
+        }
+        return new VectorImpl(values);
+    }
+
+    @Override
     public LinalgOperations getOperations() {
         return new LinalgOperationsImpl();
     }

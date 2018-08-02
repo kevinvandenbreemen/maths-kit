@@ -15,7 +15,7 @@ public class NeuralNetProviderImpl implements NeuralNetProvider {
 
     @Override
     public NeuralNet getNeuralNet(int numInputs) {
-        return new NeuralNetImpl(numInputs);
+        return new NeuralNetImpl(linalgProvider, numInputs);
     }
 
     @Override

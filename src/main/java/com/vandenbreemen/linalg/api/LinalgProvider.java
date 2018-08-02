@@ -24,6 +24,8 @@ public interface LinalgProvider {
      */
     Vector getVector(double[] entries);
 
+    Vector copyVector(Vector vector);
+
     /**
      * Get operations that can be performed on matrices/vectors/etc
      * @return
