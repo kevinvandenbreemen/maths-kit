@@ -4,6 +4,7 @@ import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
+import com.vandenbreemen.linalg.impl.SigmoidFunction;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +37,9 @@ public class NeuralNetPOCTest {
         //  Assert/test
         System.out.println(inputVector);
         System.out.println(weightedInputs);
+
+        System.out.println(linalgProvider.getOperations().function(weightedInputs, new SigmoidFunction()));
+
         //  If the place hasn't burned down it's been a good day!
     }
 
