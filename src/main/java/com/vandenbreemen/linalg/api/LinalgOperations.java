@@ -8,4 +8,6 @@ public interface LinalgOperations {
     Vector add(Vector v1, Vector v2);
 
     Matrix randomEntries(Matrix matrix);
+
+    Vector randomEntries(Vector vector);
 }

@@ -20,4 +20,9 @@ public class VectorImpl implements Vector {
     public double entry(int position) {
         return this.entries[position];
     }
+
+    @Override
+    public String toString() {
+        return asString();
+    }
 }

@@ -62,4 +62,14 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
         return matrix;
     }
+
+    @Override
+    public Vector randomEntries(Vector vector) {
+        Random random = new Random(System.nanoTime());
+        double[] values = new double[vector.length()];
+        for(int i=0; i< vector.length(); i++){
+            values[i] = random.nextDouble();
+        }
+        return new VectorImpl(values);
+    }
 }
