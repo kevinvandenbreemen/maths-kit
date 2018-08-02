@@ -57,4 +57,24 @@ public class NeuralNetPOCTest {
         System.out.println("ACTIVATIONS:  "+activations);
     }
 
+    @Test
+    public void shouldGenerateQuadraticCostForSingleTrainingExample(){
+        //  Arrange
+        Vector expected = linalgProvider.getVector(new double[]{1,0,1});
+        Vector actual = linalgProvider.getVector(new double[]{0.89, 0.001, 0.2});
+        int numSamples = 1;
+
+        //  Act
+        Vector difference = linalgProvider.getOperations().subtract(expected, actual);
+        double magnitude = linalgProvider.getOperations().norm(difference);
+        magnitude = magnitude*magnitude;    //  Squared
+        System.out.println(magnitude);
+
+        //  print
+        double cost = (1./(2.*numSamples)) * magnitude;
+        System.out.println(cost);
+    }
+
+
+
 }

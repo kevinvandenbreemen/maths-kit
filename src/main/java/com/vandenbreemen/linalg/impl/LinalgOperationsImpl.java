@@ -92,4 +92,18 @@ public class LinalgOperationsImpl implements LinalgOperations {
 
         return Math.sqrt(sum);
     }
+
+    @Override
+    public Vector subtract(Vector v1, Vector v2) {
+        if(v1.length() != v2.length()){
+            throw new RuntimeException("both vectors must have same number of entries ("+v1.length()+")");
+        }
+
+        double[] result = new double[v1.length()];
+        for(int i=0; i<v1.length(); i++){
+            result[i] = v1.entry(i)-v2.entry(i);
+        }
+
+        return new VectorImpl(result);
+    }
 }

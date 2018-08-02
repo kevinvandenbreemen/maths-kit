@@ -46,6 +46,21 @@ public class VectorImplTest {
     }
 
     @Test
+    public void shouldSubtractVectors(){
+
+        //  Arrange
+        Vector v1 = provider.getVector(new double[]{2,3});
+        Vector v2 = provider.getVector(new double[]{3,3});
+
+        //  Act
+        Vector sum = provider.getOperations().subtract(v1, v2);
+
+        //  Assert
+        assertEquals(-1.0, sum.entry(0));
+        assertEquals(0.0, sum.entry(1));
+    }
+
+    @Test
     public void shouldOperateOnVector(){
 
         //  Arrange
