@@ -1,5 +1,6 @@
 package com.vandenbreemen.ai.neuralnet.api;
 
+import com.vandenbreemen.ai.neuralnet.impl.NeuralNetLayerImpl;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
@@ -41,6 +42,19 @@ public class NeuralNetPOCTest {
         System.out.println(linalgProvider.getOperations().function(weightedInputs, new SigmoidFunction()));
 
         //  If the place hasn't burned down it's been a good day!
+    }
+
+    @Test
+    public void shouldGenerateLayerActivationsUsingLayerType(){
+
+        //  Arrange
+        NeuralNetLayer layer = new NeuralNetLayerImpl(linalgProvider, 2, 3);
+
+        //  Act
+        Vector activations = layer.getActivation(linalgProvider.getVector(new double[]{1.0, 0.0}));
+
+        //  Assert/Test
+        System.out.println("ACTIVATIONS:  "+activations);
     }
 
 }
