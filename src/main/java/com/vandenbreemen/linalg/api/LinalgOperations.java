@@ -12,4 +12,6 @@ public interface LinalgOperations {
     Vector randomEntries(Vector vector);
 
     Vector function(Vector vector, VectorFunction function);
+
+    double norm(Vector vector);
 }

@@ -82,4 +82,14 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
         return new VectorImpl(result);
     }
+
+    @Override
+    public double norm(Vector vector) {
+        double sum = 0.0;
+        for(int i=0; i<vector.length(); i++){
+            sum += vector.entry(i) * vector.entry(i);
+        }
+
+        return Math.sqrt(sum);
+    }
 }

@@ -61,4 +61,16 @@ public class VectorImplTest {
 
     }
 
+    @Test
+    public void shouldComputeVectorNorm(){
+        //  Arrange
+        Vector vector = provider.getVector(new double[]{3, 4});
+
+        //  Act
+        double norm = provider.getOperations().norm(vector);
+
+        //  Assert
+        assertEquals(5.0, norm);
+    }
+
 }
