@@ -81,35 +81,6 @@ public class NeuralNetPOCTest {
     }
 
     @Test
-    public void shouldCalculateQuadraticCostFunctionForMultipleTrainingExamples(){
-
-        //  Arrange
-        TrainingExample example1 = new TrainingExample(
-                linalgProvider.getVector(new double[]{0,1}), linalgProvider.getVector(new double[]{1, 0})
-        );
-        TrainingExample example2 = new TrainingExample(
-                linalgProvider.getVector(new double[]{1,1}), linalgProvider.getVector(new double[]{0, 0})
-        );
-        example1.setActualOutput(linalgProvider.getVector(new double[]{0.8, -0.002}));
-        example2.setActualOutput(linalgProvider.getVector(new double[]{1.1, 0.3}));
-        List<TrainingExample> examples = Arrays.asList(example1, example2);
-
-        //  Act
-        double sum = 0.0;
-        for(TrainingExample example: examples){
-            Vector difference = linalgProvider.getOperations().subtract(example.getExpectedOutput(), example.getActualOutput());
-            double magnitude = linalgProvider.getOperations().norm(difference);
-            sum += magnitude;
-        }
-
-        double cost = (1./(2.*examples.size())) * sum;
-        System.out.println(cost);
-
-        assertEquals(cost, new QuadraticCostFunction(linalgProvider).averageCost(examples.toArray(new TrainingExample[examples.size()])));
-
-    }
-
-    @Test
     public void shouldComputeGradientAsZeroForQuadraticCostFunctionAtZero(){
         //  Arrange
         TrainingExample example = new TrainingExample(
