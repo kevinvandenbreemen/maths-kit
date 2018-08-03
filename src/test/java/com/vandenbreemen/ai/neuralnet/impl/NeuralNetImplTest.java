@@ -72,4 +72,23 @@ public class NeuralNetImplTest {
         assertEquals("Entries", 2, output.length());
     }
 
+    @Test
+    public void shouldComputeCostForMultipleTrainingExamples(){
+        //  Arrange
+        NeuralNet net = neuralNetProvider.getNeuralNet(2);
+        net.addLayer(neuralNetProvider.createLayer(net, 3));
+        net.addLayer(neuralNetProvider.createLayer(net, 2));
+
+        //  Act
+        Vector output1 = net.getOutout(
+                linalgProvider.getVector(new double[]{0.0, 1.0})
+        );
+
+        Vector output2 = net.getOutout(
+                linalgProvider.getVector(new double[]{1.0, 1.0})
+        );
+
+
+    }
+
 }

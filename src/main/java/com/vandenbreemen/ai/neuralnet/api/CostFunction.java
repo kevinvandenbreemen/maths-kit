@@ -1,8 +1,13 @@
 package com.vandenbreemen.ai.neuralnet.api;
 
-@FunctionalInterface
+import com.vandenbreemen.linalg.api.Vector;
+
 public interface CostFunction {
 
-    double cost(TrainingExample...examples);
+    double averageCost(TrainingExample...examples);
+
+    double cost(TrainingExample example);
+
+    Vector gradient(TrainingExample example);
 
 }

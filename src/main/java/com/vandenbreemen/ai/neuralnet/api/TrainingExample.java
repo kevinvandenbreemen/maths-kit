@@ -8,9 +8,9 @@ public class TrainingExample {
     private Vector output;
     private Vector actualOutput;
 
-    public TrainingExample(Vector input, Vector output) {
+    public TrainingExample(Vector input, Vector expectedOutput) {
         this.input = input;
-        this.output = output;
+        this.output = expectedOutput;
     }
 
     public Vector getActualOutput() {
@@ -25,7 +25,7 @@ public class TrainingExample {
         return input;
     }
 
-    public Vector getOutput() {
+    public Vector getExpectedOutput() {
         return output;
     }
 }

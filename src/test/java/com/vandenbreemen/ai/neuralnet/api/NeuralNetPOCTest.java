@@ -97,7 +97,7 @@ public class NeuralNetPOCTest {
         //  Act
         double sum = 0.0;
         for(TrainingExample example: examples){
-            Vector difference = linalgProvider.getOperations().subtract(example.getOutput(), example.getActualOutput());
+            Vector difference = linalgProvider.getOperations().subtract(example.getExpectedOutput(), example.getActualOutput());
             double magnitude = linalgProvider.getOperations().norm(difference);
             sum += magnitude;
         }
@@ -105,8 +105,42 @@ public class NeuralNetPOCTest {
         double cost = (1./(2.*examples.size())) * sum;
         System.out.println(cost);
 
-        assertEquals(cost, new QuadraticCostFunction(linalgProvider).cost(examples.toArray(new TrainingExample[examples.size()])));
+        assertEquals(cost, new QuadraticCostFunction(linalgProvider).averageCost(examples.toArray(new TrainingExample[examples.size()])));
 
+    }
+
+    @Test
+    public void shouldComputeGradientAsZeroForQuadraticCostFunctionAtZero(){
+        //  Arrange
+        TrainingExample example = new TrainingExample(
+                linalgProvider.getVector(new double[]{0., 1.}),
+                linalgProvider.getVector(new double[]{1., 0.})
+        );
+        example.setActualOutput(linalgProvider.getVector(new double[]{1., 0.}));
+
+        //  Act
+        Vector gradient = new QuadraticCostFunction(linalgProvider).gradient(example);
+
+        //  Assert
+        assertEquals(2, gradient.length());
+        assertEquals(0., gradient.entry(0));
+        assertEquals(0., gradient.entry(1));
+    }
+
+    @Test
+    public void shouldCalculateGradientForQuadraticCostFunction(){
+        //  Arrange
+        TrainingExample example = new TrainingExample(
+                linalgProvider.getVector(new double[]{0., 1.}),
+                linalgProvider.getVector(new double[]{1., 0.})
+        );
+        example.setActualOutput(linalgProvider.getVector(new double[]{1.1, 0.22}));
+
+        //  Act
+        Vector gradient = new QuadraticCostFunction(linalgProvider).gradient(example);
+
+        //  Print
+        System.out.println(gradient);
     }
 
 }

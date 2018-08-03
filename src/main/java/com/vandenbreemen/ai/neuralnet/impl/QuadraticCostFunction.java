@@ -14,14 +14,28 @@ public class QuadraticCostFunction implements CostFunction {
     }
 
     @Override
-    public double cost(TrainingExample... examples) {
+    public double averageCost(TrainingExample... examples) {
         double sum = 0.0;
         for(TrainingExample example: examples){
-            Vector difference = linalgProvider.getOperations().subtract(example.getOutput(), example.getActualOutput());
-            double magnitude = linalgProvider.getOperations().norm(difference);
-            sum += magnitude;
+            sum += cost(example);
         }
 
-        return (1./(2.*examples.length)) * sum;
+        return (1./(examples.length)) * sum;
+    }
+
+    @Override
+    public double cost(TrainingExample example) {
+        Vector difference = linalgProvider.getOperations().subtract(example.getExpectedOutput(), example.getActualOutput());
+        double magnitude = linalgProvider.getOperations().norm(difference);
+        return 0.5 * (magnitude*magnitude);
+    }
+
+    @Override
+    public Vector gradient(TrainingExample example) {
+        double[] result = new double[example.getExpectedOutput().length()];
+        for(int i=0; i<result.length; i++){
+            result[i] = example.getActualOutput().entry(i) - example.getExpectedOutput().entry(i);
+        }
+        return linalgProvider.getVector(result);
     }
 }
