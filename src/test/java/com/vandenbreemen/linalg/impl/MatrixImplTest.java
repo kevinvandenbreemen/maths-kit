@@ -51,4 +51,27 @@ public class MatrixImplTest {
         assertEquals("Product", 101.3, product.entry(1), 0.00000001);
     }
 
+    @Test
+    public void shouldTranspose(){
+        //  Arrange
+        Matrix m = provider.getMatrix(new double[][]{
+                {1,2,3},
+                {4,5,6}
+        });
+
+        //  Act
+        Matrix transpose = provider.getOperations().transpose(m);
+
+        //  Assert
+        assertEquals(3, transpose.rows());
+        assertEquals(2, transpose.cols());
+        assertEquals(1., transpose.get(0,0));
+        assertEquals(4., transpose.get(0,1));
+        assertEquals(2., transpose.get(1,0));
+        assertEquals(5., transpose.get(1,1));
+        assertEquals(3., transpose.get(2,0));
+        assertEquals(6., transpose.get(2,1));
+
+    }
+
 }

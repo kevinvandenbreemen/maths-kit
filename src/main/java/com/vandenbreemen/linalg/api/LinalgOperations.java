@@ -16,4 +16,6 @@ public interface LinalgOperations {
     double norm(Vector vector);
 
     Vector subtract(Vector v1, Vector v2);
+
+    Matrix transpose(Matrix m);
 }

@@ -8,6 +8,13 @@ import com.vandenbreemen.linalg.api.Vector;
 public class LinalgProviderImpl implements LinalgProvider {
     @Override
     public Matrix getMatrix(double[][] values) {
+        //  Verify all rows are same length:
+        int len = values[0].length;
+        for(int i=1; i<values.length; i++){
+            if(values[i].length != len){
+                throw new RuntimeException("Raw data cannot be a ragged array.  Row "+i+" is missing at least one entry");
+            }
+        }
         return new MatrixImpl(values);
     }
 

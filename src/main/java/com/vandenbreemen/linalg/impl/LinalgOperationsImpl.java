@@ -106,4 +106,15 @@ public class LinalgOperationsImpl implements LinalgOperations {
 
         return new VectorImpl(result);
     }
+
+    @Override
+    public Matrix transpose(Matrix m) {
+        double[][] values = new double[m.cols()][m.rows()];
+        for(int i=0; i<m.rows(); i++){
+            for(int j=0; j<m.cols(); j++){
+                values[j][i] = m.get(i,j);
+            }
+        }
+        return new MatrixImpl(values);
+    }
 }
