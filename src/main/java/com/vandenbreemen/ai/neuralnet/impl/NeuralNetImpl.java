@@ -1,12 +1,14 @@
 package com.vandenbreemen.ai.neuralnet.impl;
 
+import com.vandenbreemen.ai.neuralnet.api.CostFunction;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNet;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetLayer;
+import com.vandenbreemen.ai.neuralnet.api.TrainingExample;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Vector;
-import sun.plugin.javascript.navig4.Layer;
-
-import java.util.List;
+import com.vandenbreemen.linalg.api.VectorFunction;
+import com.vandenbreemen.linalg.impl.SigmoidDerivative;
+import com.vandenbreemen.linalg.impl.SigmoidFunction;
 
 public class NeuralNetImpl implements NeuralNet {
 
@@ -16,10 +18,16 @@ public class NeuralNetImpl implements NeuralNet {
 
     private NeuralNetLayer[] layers;
 
+    private CostFunction costFunction;
+
+    private VectorFunction activationFunctionDerivative;
+
     public NeuralNetImpl(LinalgProvider linalgProvider, int numInputs) {
         this.linalgProvider = linalgProvider;
         this.numInputs = numInputs;
         this.layers = new NeuralNetLayer[0];
+        this.costFunction = new QuadraticCostFunction(this.linalgProvider);
+        this.activationFunctionDerivative = new SigmoidDerivative(new SigmoidFunction());
     }
 
     @Override
@@ -49,5 +57,40 @@ public class NeuralNetImpl implements NeuralNet {
         }
 
         return activations;
+    }
+
+    /**
+     * Compute the z term for the output layer of the net
+     * @param example
+     * @return
+     */
+    private Vector getWeightedInput(TrainingExample example){
+        Vector activations = linalgProvider.copyVector(example.getInput());
+
+        for(int i=0; i<layers.length; i++){
+            if(i < layers.length-1) {
+                activations = layers[i].getActivation(activations);
+            }
+        }
+
+        //  Now we're at final layer, so output the weighted input for that layer!
+        return layers[layers.length-1].getWeightedInput(activations);
+    }
+
+    @Override
+    public void train(TrainingExample... examples) {
+        //  Basic Gradient Descent
+        for(TrainingExample example:examples){
+            example.setActualOutput(getOutout(example.getInput()));
+            Vector outputError = getOutputError(example);   //  delta_L
+            System.out.println("error="+outputError);
+        }
+    }
+
+    private Vector getOutputError(TrainingExample example) {
+        Vector costGradient = this.costFunction.gradient(example);
+        Vector activationDerivative = getWeightedInput(example);
+        activationDerivative = linalgProvider.getOperations().function(activationDerivative, this.activationFunctionDerivative);
+        return linalgProvider.getOperations().hadamard(costGradient, activationDerivative);
     }
 }

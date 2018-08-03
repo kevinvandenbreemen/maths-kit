@@ -6,6 +6,7 @@ import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
+import com.vandenbreemen.linalg.impl.SigmoidDerivative;
 import com.vandenbreemen.linalg.impl.SigmoidFunction;
 import org.junit.Before;
 import org.junit.Test;

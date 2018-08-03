@@ -11,4 +11,6 @@ public interface NeuralNet {
     int getNumOutputs();
 
     Vector getOutout(Vector input);
+
+    void train(TrainingExample...examples);
 }

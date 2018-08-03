@@ -3,6 +3,7 @@ package com.vandenbreemen.ai.neuralnet.impl;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNet;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetLayer;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetProvider;
+import com.vandenbreemen.ai.neuralnet.api.TrainingExample;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
@@ -73,22 +74,18 @@ public class NeuralNetImplTest {
     }
 
     @Test
-    public void shouldComputeCostForMultipleTrainingExamples(){
+    public void shouldBackPropagateWithoutCrash(){
         //  Arrange
         NeuralNet net = neuralNetProvider.getNeuralNet(2);
         net.addLayer(neuralNetProvider.createLayer(net, 3));
         net.addLayer(neuralNetProvider.createLayer(net, 2));
 
         //  Act
-        Vector output1 = net.getOutout(
-                linalgProvider.getVector(new double[]{0.0, 1.0})
+        TrainingExample example = new TrainingExample(
+                linalgProvider.getVector(new double[]{0., 1.}),
+                linalgProvider.getVector(new double[]{1., 0.})
         );
-
-        Vector output2 = net.getOutout(
-                linalgProvider.getVector(new double[]{1.0, 1.0})
-        );
-
-
+        net.train(example);
     }
 
 }
