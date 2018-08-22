@@ -107,4 +107,32 @@ public class MatrixImplTest {
         assertEquals(1.0, column.entry(2));
     }
 
+    @Test
+    public void shouldAddVectorToMatrix(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 0.9},
+                new double[]{0.1, 0.2},
+                new double[]{1.,1.}
+        });
+
+        System.out.println(m);
+
+        Vector vector = provider.getVector(new double[]{1.0,1.0,1.0});
+        provider.getOperations().prependColumn(m, vector);
+        System.out.println(m);
+
+        assertEquals(3, m.cols());
+
+        assertEquals(1.0, m.get(0,0));
+        assertEquals(1.0, m.get(1,0));
+        assertEquals(1.0, m.get(2,0));
+        assertEquals(1.0, m.get(0,1));
+        assertEquals(0.1, m.get(1,1));
+        assertEquals(1.0, m.get(2,1));
+        assertEquals(0.9, m.get(0,2));
+        assertEquals(0.2, m.get(1,2));
+        assertEquals(1.0, m.get(2,2));
+
+    }
+
 }

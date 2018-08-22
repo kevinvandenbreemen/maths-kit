@@ -20,4 +20,6 @@ public interface LinalgOperations {
     Matrix transpose(Matrix m);
 
     Matrix matrixMatrixProduct(Matrix m, Matrix n);
+
+    void prependColumn(Matrix m, Vector vector);
 }

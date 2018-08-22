@@ -120,7 +120,7 @@ public class LinalgOperationsImpl implements LinalgOperations {
 
     @Override
     public Matrix matrixMatrixProduct(Matrix m, Matrix n) {
-        if(n.rows() != m.cols()){
+        if(m.cols() != n.rows()){
             throw new RuntimeException("Cannot multiply "+m.rows()+" x "+m.cols()+" matrix by "+n.rows() + " x "+n.cols() + " matrix");
         }
 
@@ -140,5 +140,21 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
 
         return new MatrixImpl(result);
+    }
+
+    @Override
+    public void prependColumn(Matrix m, Vector vector) {
+        MatrixImpl impl = (MatrixImpl) m;
+        double[][] updated = new double[m.rows()][m.cols()+1];
+        for(int j=0; j<m.rows(); j++){
+            updated[j][0] = vector.entry(j);
+        }
+        for(int i = 0; i<m.cols(); i++){
+            for(int j=0; j<m.rows(); j++){
+                updated[j][i+1] = m.get(j, i);
+            }
+        }
+
+        ((MatrixImpl) m).data = updated;
     }
 }
