@@ -25,4 +25,6 @@ public interface Matrix {
         }
         return bld.toString();
     }
+
+    Vector columnVector(int columnIndex);
 }

@@ -117,4 +117,28 @@ public class LinalgOperationsImpl implements LinalgOperations {
         }
         return new MatrixImpl(values);
     }
+
+    @Override
+    public Matrix matrixMatrixProduct(Matrix m, Matrix n) {
+        if(n.rows() != m.cols()){
+            throw new RuntimeException("Cannot multiply "+m.rows()+" x "+m.cols()+" matrix by "+n.rows() + " x "+n.cols() + " matrix");
+        }
+
+        double[][] result = new double[m.rows()][n.cols()];
+
+        Vector columnVector;
+        Vector vProduct;
+
+        for(int i=0; i<n.cols(); i++){
+            columnVector = n.columnVector(i);
+            vProduct = matrixVectorProduct(m, columnVector);
+
+            for (int j = 0; j < vProduct.length(); j++) {
+                result[j][i] = vProduct.entry(j);
+            }
+
+        }
+
+        return new MatrixImpl(result);
+    }
 }

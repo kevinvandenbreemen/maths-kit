@@ -74,4 +74,37 @@ public class MatrixImplTest {
 
     }
 
+    @Test
+    public void shouldMultiplyTwoMatrices(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 0.9},
+                new double[]{0.1, 0.2},
+                new double[]{1.,1.}
+        });
+        Matrix n = provider.getMatrix(new double[][]{
+                new double[]{1.0,1.0},
+                new double[]{2.0,2.0}
+        });
+
+        Matrix product = provider.getOperations().matrixMatrixProduct(m, n);
+        assertEquals(3, product.rows());
+        assertEquals(2, product.cols());
+
+    }
+
+    @Test
+    public void shouldGetColumnVector(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 0.9},
+                new double[]{0.1, 0.2},
+                new double[]{1.,1.}
+        });
+
+        Vector column = m.columnVector(0);
+        assertEquals(3, column.length());
+        assertEquals(1.0, column.entry(0));
+        assertEquals(0.1, column.entry(1));
+        assertEquals(1.0, column.entry(2));
+    }
+
 }
