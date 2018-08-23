@@ -33,4 +33,8 @@ public interface LinalgProvider {
     LinalgOperations getOperations();
 
     Vector vectorOf(double value, int numRows);
+
+    Matrix fromVectors(Vector...vectors);
+
+    Vector[] toColumnVectors(Matrix matrix);
 }

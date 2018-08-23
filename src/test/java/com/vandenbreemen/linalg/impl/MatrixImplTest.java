@@ -149,4 +149,26 @@ public class MatrixImplTest {
         assertEquals(8.0, up.get(1,1));
     }
 
+    @Test
+    public void shouldUnrollAndRullUpColumnVectors(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+
+        Vector[] vectors = provider.toColumnVectors(m);
+        assertEquals(2, vectors.length);
+
+        assertEquals(1.0,vectors[0].entry(0));
+        assertEquals(3.0,vectors[0].entry(1));
+        assertEquals(2.0,vectors[1].entry(0));
+        assertEquals(4.0,vectors[1].entry(1));
+
+        Matrix n = provider.fromVectors(vectors);
+        assertEquals(1.0, n.get(0,0));
+        assertEquals(3.0, n.get(1,0));
+        assertEquals(2.0, n.get(0,1));
+        assertEquals(4.0, n.get(1,1));
+    }
+
 }
