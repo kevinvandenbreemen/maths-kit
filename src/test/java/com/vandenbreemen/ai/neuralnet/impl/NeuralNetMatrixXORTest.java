@@ -33,17 +33,18 @@ public class NeuralNetMatrixXORTest {
 
         linalgProvider = new LinalgProviderImpl();
 
-        theta1 = linalgProvider.getMatrix(3, 2);    //  2 inputs (columns), 3 outputs (hidden layers)
+        theta1 = linalgProvider.getMatrix(4, 3);    //  2 inputs (columns), 3 outputs (hidden layers)
         theta2 = linalgProvider.getMatrix(1, 3);    //  3 inputs (columns), 1 outputs (output)
 
         trainingInputs = linalgProvider.getMatrix(new double[][]{
-                new double[]{1,1},
-                new double[]{1,0},
-                new double[]{0,1},
-                new double[]{0,0}
+                new double[]{1, 1, 0, 0},
+                new double[]{1, 0, 1, 0}
         });
 
         trainingOutputs = linalgProvider.getVector(new double[]{0,1,1,0});
+
+        linalgProvider.getOperations().randomEntries(theta1);
+        linalgProvider.getOperations().randomEntries(theta2);
     }
 
     @Test
@@ -56,7 +57,26 @@ public class NeuralNetMatrixXORTest {
 
     @Test
     public void shouldComputeActivationsOfHiddenLayer(){
-        Vector z_2 = linalgProvider.getOperations().
+
+        Matrix samplesTranspose = linalgProvider.getOperations().transpose(trainingInputs);
+        linalgProvider.getOperations().prependColumn(samplesTranspose, linalgProvider.vectorOf(1.0, samplesTranspose.rows()));
+        System.out.println(samplesTranspose);
+        trainingInputs = linalgProvider.getOperations().transpose(samplesTranspose);
+        System.out.println(trainingInputs);
+
+
+        Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
+        System.out.println("Z Layer 2:\n"+z_2Matrix);
+
+        Matrix activationsLayer2 = linalgProvider.getOperations().function(z_2Matrix, (entry)->
+            1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+        System.out.println("ACTIVATIONS:\n"+activationsLayer2);
+    }
+
+    @Test
+    public void shouldComputeActivationsOfOutputLayer(){
+
     }
 
 
