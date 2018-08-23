@@ -168,4 +168,13 @@ public class LinalgOperationsImpl implements LinalgOperations {
 
         ((MatrixImpl) m).data = updated;
     }
+
+    @Override
+    public Vector vectorScalarProduct(double scalar, Vector vector) {
+        double[] result = new double[vector.length()];
+        for(int i=0; i<vector.length(); i++){
+            result[i] = scalar * vector.entry(i);
+        }
+        return new VectorImpl(result);
+    }
 }

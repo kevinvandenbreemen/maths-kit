@@ -7,6 +7,10 @@ import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.DoubleStream;
+
 /**
  * This will be a test to demonstrate back propagation implemented using matrices
  */
@@ -132,6 +136,80 @@ public class NeuralNetMatrixXORTest {
 
         Matrix outputDeltaMatrix = linalgProvider.fromVectors(deltaVectors);
         System.out.println("outputDeltas:"+outputDeltaMatrix);
+    }
+
+    @Test
+    public void shouldComputeCostFunction(){
+
+        //  Arrange
+        double lambda = 1.1;
+
+        Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
+
+        Matrix activationsLayer2 = linalgProvider.getOperations().function(z_2Matrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+
+        //  Add bias for the activations of the output layer
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+        linalgProvider.getOperations().prependColumn(activationsLayer2, linalgProvider.vectorOf(1.0, activationsLayer2.rows()));
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+
+        System.out.println(activationsLayer2);
+
+        Matrix z_OutMatrix = linalgProvider.getOperations().matrixMatrixProduct(theta2, activationsLayer2);
+        Matrix hThetaXMatrix = linalgProvider.getOperations().function(z_OutMatrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+
+        //  THIS IS REALLY IMPORTANT:  IT'S THE COST FUNC!
+
+
+        //  This should be a loop over layers...
+        List<Matrix> thetaMatrices = Arrays.asList(theta1, theta2);
+
+
+        double cost = computeCost(lambda, hThetaXMatrix, thetaMatrices);
+        System.out.println(cost);
+    }
+
+
+
+
+    //  TODO    If this does NOT work do NOT give up.  You will need to contrive a series of theta metrices as well as expected outputs and training inputs/outputs and
+    //  calculate the cost based on that and verify.
+    private double computeCost(double lambda, Matrix hThetaXMatrix, List<Matrix> thetaMatrices) {
+        double innerSum = 0.0;
+        double philmontFactor = 0.0;
+        for(int l = 0; l<thetaMatrices.size(); l++){
+            for(int i=0; i<thetaMatrices.get(l).cols(); i++){
+                for(int j=1; j<thetaMatrices.get(l).rows(); j++){
+                    philmontFactor += Math.pow(thetaMatrices.get(l).get(j, i), 2);
+                }
+            }
+        }
+        philmontFactor = lambda / (2.0 * trainingInputs.cols());
+
+
+        for(int i=0; i<trainingInputs.cols(); i++) {
+
+            Vector hTheta_x_i = hThetaXMatrix.columnVector(i);
+            Vector log_hTheta_x_i = linalgProvider.getOperations().function(hTheta_x_i, e->Math.log(e));
+            Vector log_1_minus_hTheta_x_i = linalgProvider.getOperations().subtract(
+                    linalgProvider.vectorOf(1.0, hTheta_x_i.length()), hTheta_x_i
+            );
+            log_1_minus_hTheta_x_i = linalgProvider.getOperations().function(log_1_minus_hTheta_x_i, e->Math.log(e));
+
+            for (int k = 0; k < trainingOutputs.rows(); k++) {
+                double y_k_i = trainingOutputs.get(k, i);
+
+                double sum = y_k_i * log_hTheta_x_i.entry(k);
+                sum += (1 - y_k_i) * log_1_minus_hTheta_x_i.entry(k);
+                innerSum += sum;
+            }
+        }
+
+        return (-1.0/trainingInputs.cols()) * innerSum + philmontFactor;
     }
 
 

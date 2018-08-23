@@ -24,4 +24,6 @@ public interface LinalgOperations {
     Matrix matrixMatrixProduct(Matrix m, Matrix n);
 
     void prependColumn(Matrix m, Vector vector);
+
+    Vector vectorScalarProduct(double scalar, Vector vector);
 }
