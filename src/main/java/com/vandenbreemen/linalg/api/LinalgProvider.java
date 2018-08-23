@@ -31,4 +31,6 @@ public interface LinalgProvider {
      * @return
      */
     LinalgOperations getOperations();
+
+    Vector vectorOf(double value, int numRows);
 }

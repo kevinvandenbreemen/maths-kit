@@ -13,6 +13,8 @@ public interface LinalgOperations {
 
     Vector function(Vector vector, VectorFunction function);
 
+    Matrix function(Matrix matrix, VectorFunction function);
+
     double norm(Vector vector);
 
     Vector subtract(Vector v1, Vector v2);

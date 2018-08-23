@@ -84,6 +84,17 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public Matrix function(Matrix matrix, VectorFunction function) {
+        double[][] result = new double[matrix.rows()][matrix.cols()];
+        for(int i=0; i<matrix.cols(); i++){
+            for(int j=0; j<matrix.rows(); j++){
+                result[j][i] = function.operate(matrix.get(j, i));
+            }
+        }
+        return new MatrixImpl(result);
+    }
+
+    @Override
     public double norm(Vector vector) {
         double sum = 0.0;
         for(int i=0; i<vector.length(); i++){

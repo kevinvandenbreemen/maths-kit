@@ -41,4 +41,13 @@ public class LinalgProviderImpl implements LinalgProvider {
     public LinalgOperations getOperations() {
         return new LinalgOperationsImpl();
     }
+
+    @Override
+    public Vector vectorOf(double value, int numRows) {
+        double[] values = new double[numRows];
+        for(int i=0; i<numRows; i++){
+            values[i] = value;
+        }
+        return new VectorImpl(values);
+    }
 }

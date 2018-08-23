@@ -135,4 +135,18 @@ public class MatrixImplTest {
 
     }
 
+    @Test
+    public void shouldOperateOnEntries(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+
+        Matrix up = provider.getOperations().function(m, e->e*2);
+        assertEquals(2.0, up.get(0,0));
+        assertEquals(6.0, up.get(1,0));
+        assertEquals(4.0, up.get(0,1));
+        assertEquals(8.0, up.get(1,1));
+    }
+
 }
