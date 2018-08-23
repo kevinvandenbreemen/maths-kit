@@ -33,13 +33,19 @@ public class NeuralNetMatrixXORTest {
 
         linalgProvider = new LinalgProviderImpl();
 
-        theta1 = linalgProvider.getMatrix(4, 3);    //  2 inputs (columns), 3 outputs (hidden layers)
-        theta2 = linalgProvider.getMatrix(1, 3);    //  3 inputs (columns), 1 outputs (output)
+        theta1 = linalgProvider.getMatrix(3, 3);    //  2 inputs + 1 bias, outputs to 3 hidden units + 1 bias
+        theta2 = linalgProvider.getMatrix(1, 4);    //  3 inputs + 1 bias(columns), 1 outputs (output)
 
         trainingInputs = linalgProvider.getMatrix(new double[][]{
                 new double[]{1, 1, 0, 0},
                 new double[]{1, 0, 1, 0}
         });
+
+        //  Tweak this by adding a 1.0 bias for each sample.
+        trainingInputs = linalgProvider.getOperations().transpose(trainingInputs);
+        linalgProvider.getOperations().prependColumn(trainingInputs, linalgProvider.vectorOf(1.0, trainingInputs.rows()));
+        trainingInputs = linalgProvider.getOperations().transpose(trainingInputs);
+
 
         trainingOutputs = linalgProvider.getVector(new double[]{0,1,1,0});
 
@@ -58,11 +64,8 @@ public class NeuralNetMatrixXORTest {
     @Test
     public void shouldComputeActivationsOfHiddenLayer(){
 
-        Matrix samplesTranspose = linalgProvider.getOperations().transpose(trainingInputs);
-        linalgProvider.getOperations().prependColumn(samplesTranspose, linalgProvider.vectorOf(1.0, samplesTranspose.rows()));
-        System.out.println(samplesTranspose);
-        trainingInputs = linalgProvider.getOperations().transpose(samplesTranspose);
-        System.out.println(trainingInputs);
+
+        System.out.println("Training Samples:  \n" + trainingInputs);
 
 
         Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
@@ -76,7 +79,24 @@ public class NeuralNetMatrixXORTest {
 
     @Test
     public void shouldComputeActivationsOfOutputLayer(){
+        Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
 
+        Matrix activationsLayer2 = linalgProvider.getOperations().function(z_2Matrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+
+        //  Add bias for the activations of the output layer
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+        linalgProvider.getOperations().prependColumn(activationsLayer2, linalgProvider.vectorOf(1.0, activationsLayer2.rows()));
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+
+        System.out.println(activationsLayer2);
+
+        Matrix z_OutMatrix = linalgProvider.getOperations().matrixMatrixProduct(theta2, activationsLayer2);
+        Matrix activationsOutput = linalgProvider.getOperations().function(z_OutMatrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+        System.out.println(activationsOutput);
     }
 
 
