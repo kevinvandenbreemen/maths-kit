@@ -26,7 +26,7 @@ public class NeuralNetMatrixXORTest {
 
     private Matrix trainingInputs;
 
-    private Vector trainingOutputs;
+    private Matrix trainingOutputs;
 
     @Before
     public void setup(){
@@ -47,7 +47,7 @@ public class NeuralNetMatrixXORTest {
         trainingInputs = linalgProvider.getOperations().transpose(trainingInputs);
 
 
-        trainingOutputs = linalgProvider.getVector(new double[]{0,1,1,0});
+        trainingOutputs = linalgProvider.getMatrix(new double[][]{new double[]{0,1,1,0}});
 
         linalgProvider.getOperations().randomEntries(theta1);
         linalgProvider.getOperations().randomEntries(theta2);
@@ -97,6 +97,41 @@ public class NeuralNetMatrixXORTest {
                 1.0 / (1.0 + Math.exp(-1.0 * entry))
         );
         System.out.println(activationsOutput);
+    }
+
+    @Test
+    public void shouldComputeOutputDeltas(){
+        Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
+
+        Matrix activationsLayer2 = linalgProvider.getOperations().function(z_2Matrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+
+        //  Add bias for the activations of the output layer
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+        linalgProvider.getOperations().prependColumn(activationsLayer2, linalgProvider.vectorOf(1.0, activationsLayer2.rows()));
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+
+        System.out.println(activationsLayer2);
+
+        Matrix z_OutMatrix = linalgProvider.getOperations().matrixMatrixProduct(theta2, activationsLayer2);
+        Matrix hThetaXMatrix = linalgProvider.getOperations().function(z_OutMatrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+        System.out.println("HTHeta:"+hThetaXMatrix);
+
+        Vector[] yVectors = linalgProvider.toColumnVectors(trainingOutputs);
+        Vector[] hThetaVectors = linalgProvider.toColumnVectors(hThetaXMatrix);
+
+        Vector[] deltaVectors = new Vector[yVectors.length];
+        for(int i=0; i<yVectors.length; i++){
+            deltaVectors[i] = linalgProvider.getOperations().subtract(hThetaVectors[i], yVectors[i]);
+        }
+
+        System.out.println("Expected Outputs:"+trainingOutputs);
+
+        Matrix outputDeltaMatrix = linalgProvider.fromVectors(deltaVectors);
+        System.out.println("outputDeltas:"+outputDeltaMatrix);
     }
 
 
