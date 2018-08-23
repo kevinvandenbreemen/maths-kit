@@ -70,4 +70,18 @@ public class LinalgProviderImpl implements LinalgProvider {
         }
         return ret;
     }
+
+    @Override
+    public double[] unroll(Matrix m) {
+        double[] ret = new double[m.rows() * m.cols()];
+
+        int index = 0;
+        for(int i=0; i<m.cols(); i++){
+            for (int j=0; j<m.rows(); j++){
+                ret[index] = m.get(j, i);
+                index ++;
+            }
+        }
+        return ret;
+    }
 }

@@ -6,7 +6,11 @@ import com.vandenbreemen.linalg.api.Vector;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
 
@@ -169,6 +173,22 @@ public class MatrixImplTest {
         assertEquals(3.0, n.get(1,0));
         assertEquals(2.0, n.get(0,1));
         assertEquals(4.0, n.get(1,1));
+    }
+
+    @Test
+    public void shouldUnrollMatrix(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+
+        double[] values = provider.unroll(m);
+
+        assertEquals(4, values.length);
+        assertTrue(Arrays.stream(values).filter(d->d == 1.0).findFirst().isPresent());
+        assertTrue(Arrays.stream(values).filter(d->d == 2.0).findFirst().isPresent());
+        assertTrue(Arrays.stream(values).filter(d->d == 3.0).findFirst().isPresent());
+        assertTrue(Arrays.stream(values).filter(d->d == 4.0).findFirst().isPresent());
     }
 
 }
