@@ -192,6 +192,20 @@ public class MatrixImplTest {
     }
 
     @Test
+    public void shouldGetSubMatrixFromRowIndex(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+
+        Matrix subMatrix = provider.getOperations().subMatrixFromRow(m, 1);
+        assertEquals(1, subMatrix.rows());
+        assertEquals(2, subMatrix.cols());
+        assertEquals(3.0, subMatrix.get(0, 0));
+        assertEquals(4.0, subMatrix.get(0, 1));
+    }
+
+    @Test
     public void shouldHadamardMatrices(){
         Matrix m = provider.getMatrix(new double[][]{
                 new double[]{1.0, 2.0},

@@ -198,4 +198,15 @@ public class LinalgOperationsImpl implements LinalgOperations {
     public Matrix copy(Matrix matrix) {
         return transpose(transpose(matrix));
     }
+
+    @Override
+    public Matrix subMatrixFromRow(Matrix matrix, int rowIndex) {
+        double[][] result = new double[matrix.rows()-1][matrix.cols()];
+        for(int i=0; i<matrix.cols(); i++){
+            for(int j=0; j<matrix.rows()-rowIndex; j++){
+                result[j][i] = matrix.get(j+rowIndex, i);
+            }
+        }
+        return new MatrixImpl(result);
+    }
 }

@@ -30,4 +30,6 @@ public interface LinalgOperations {
     Vector vectorScalarProduct(double scalar, Vector vector);
 
     Matrix copy(Matrix matrix);
+
+    Matrix subMatrixFromRow(Matrix matrix, int rowIndex);
 }
