@@ -22,6 +22,22 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public Matrix hadamard(Matrix m1, Matrix m2) {
+        if(m1.cols() != m2.cols() || m1.rows() != m2.rows()){
+            throw new RuntimeException("Cannot compute hadamard for matrices of differing size ("+m1.rows()+" x "+m1.cols()+") vs ("+m2.rows()+" x "+m2.cols()+")");
+        }
+
+        double[][] productData = new double[m1.rows()][m1.cols()];
+        for(int i=0; i<m1.cols(); i++){
+            for(int j=0; j<m1.rows(); j++){
+                productData[j][i] = m1.get(j, i) * m2.get(j, i);
+            }
+        }
+
+        return new MatrixImpl(productData);
+    }
+
+    @Override
     public Vector matrixVectorProduct(Matrix m, Vector v) {
         if(v.length() != m.cols()){
             throw new RuntimeException("Vector must have same number of entries as columns ("+m.cols()+")");
@@ -176,5 +192,10 @@ public class LinalgOperationsImpl implements LinalgOperations {
             result[i] = scalar * vector.entry(i);
         }
         return new VectorImpl(result);
+    }
+
+    @Override
+    public Matrix copy(Matrix matrix) {
+        return transpose(transpose(matrix));
     }
 }

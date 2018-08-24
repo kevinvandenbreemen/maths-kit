@@ -3,6 +3,8 @@ package com.vandenbreemen.linalg.api;
 public interface LinalgOperations {
     Vector hadamard(Vector v1, Vector v2);
 
+    Matrix hadamard(Matrix m1, Matrix m2);
+
     Vector matrixVectorProduct(Matrix m, Vector v);
 
     Vector add(Vector v1, Vector v2);
@@ -26,4 +28,6 @@ public interface LinalgOperations {
     void prependColumn(Matrix m, Vector vector);
 
     Vector vectorScalarProduct(double scalar, Vector vector);
+
+    Matrix copy(Matrix matrix);
 }
