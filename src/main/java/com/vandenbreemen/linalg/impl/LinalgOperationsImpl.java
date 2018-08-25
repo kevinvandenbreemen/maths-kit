@@ -155,6 +155,15 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public double sum(Vector vector) {
+        double sum = 0.0;
+        for(int i=0; i<vector.length(); i++){
+            sum += vector.entry(i);
+        }
+        return sum;
+    }
+
+    @Override
     public Matrix transpose(Matrix m) {
         double[][] values = new double[m.cols()][m.rows()];
         for(int i=0; i<m.rows(); i++){
