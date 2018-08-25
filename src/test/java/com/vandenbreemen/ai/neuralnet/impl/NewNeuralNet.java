@@ -53,34 +53,35 @@ public class NewNeuralNet {
 
     public void train(List<Vector> trainingInputs, List<Vector> expectedOutputs){
 
-        double λ = 1.1; //  TODO    Parameterize!
-        double α = 0.03; //  TODO    Parameterize!
+        double λ = 0.02; //  TODO    Parameterize!
+        double α = 0.3; //  TODO    Parameterize!
+
+        //  Bias updates
+        double  γ_bias = 0.1;   //  TODO    Parametrize
 
         if(trainingInputs.size() != expectedOutputs.size()){
             throw new RuntimeException("Number of training inputs not equal to number of training outputs");
         }
 
-        int numIterations = 60;
-
-
+        int numIterations = 1000;
 
         for(int iteration = 0; iteration < numIterations; iteration++) {
 
-            List<Vector> hθ_outputs = new ArrayList<>();
-            for(Vector input : trainingInputs){
-                hθ_outputs.add(compute_hTheta(input));
-            }
-            double cost = computeCost(trainingInputs, expectedOutputs, hθ_outputs, λ);
-            System.out.println("cost="+cost);
-
-            //  Δ matrices for all layers
-            List<Matrix> Δs = new ArrayList<>();
-            for (int l = 0; l < Θ_Matrices.size(); l++) {
-                Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols() - 1, 0.0));
-            }
-
 
             for (int i = 0; i < trainingInputs.size(); i++) {   //  "for i=1 to m"
+
+                List<Vector> hθ_outputs = new ArrayList<>();
+                for(Vector input : trainingInputs){
+                    hθ_outputs.add(compute_hTheta(input));
+                }
+                double cost = computeCost(trainingInputs, expectedOutputs, hθ_outputs, λ);
+                System.out.println("cost="+cost);
+
+                //  Δ matrices for all layers
+                List<Matrix> Δs = new ArrayList<>();
+                for (int l = 0; l < Θ_Matrices.size(); l++) {
+                    Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols() - 1, 0.0));
+                }
 
                 //  Activations (0-based)
                 List<Vector> activations = new ArrayList<>();
@@ -139,35 +140,43 @@ public class NewNeuralNet {
 
                 }
 
-            }
+                //  Compute derivatives
+                List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
+                for (int l = 0; l < Δs.size(); l++) {
+                    Matrix D_l = provider.getOperations().function(Δs.get(l), e -> e * (1.0 / trainingInputs.size()));
+                    Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e -> e * λ);
 
+                    //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
+                    for (int j = 1; j < D_l.cols(); j++) {
+                        for (int r = 0; r < D_l.rows(); r++) {
+                            D_l.set(r, j, D_l.get(r, j) + λΘ_l.get(r, j));
+                        }
+                    }
 
-            //  Compute derivatives
-            List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
-            for (int l = 0; l < Δs.size(); l++) {
-                Matrix D_l = provider.getOperations().function(Δs.get(l), e -> e * (1.0 / trainingInputs.size()));
-                Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e -> e * λ);
+                    finallyTheFuckingDerivatives.add(D_l);
+                }
 
-                //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
-                for (int j = 1; j < D_l.cols(); j++) {
-                    for (int r = 0; r < D_l.rows(); r++) {
-                        D_l.set(r, j, D_l.get(r, j) + λΘ_l.get(r, j));
+                //  Now update the goddam weights!
+                for(int l=0; l<finallyTheFuckingDerivatives.size(); l++){
+                    Matrix D = finallyTheFuckingDerivatives.get(l);
+                    Matrix Θ = this.Θ_Matrices.get(l);
+                    for(int j=1; j<Θ.cols(); j++){  //  Don't update the bias term
+                        for(int r=0; r<Θ.rows(); r++){
+                            Θ.set(r, j, Θ.get(r, j) - (α * D.get(r, j-1)));
+                        }
+                    }
+
+                    //  Next handle the bias
+                    double avgDeriv = provider.getOperations().sum(δs.get(l))/δs.size();
+                    for(int biasRow = 0; biasRow<Θ.rows(); biasRow++){
+                        Θ.set(biasRow, 0, Θ.get(biasRow, 0) - (γ_bias*avgDeriv));
                     }
                 }
 
-                finallyTheFuckingDerivatives.add(D_l);
             }
 
-            //  Now update the goddam weights!
-            for(int l=0; l<finallyTheFuckingDerivatives.size(); l++){
-                Matrix D = finallyTheFuckingDerivatives.get(l);
-                Matrix Θ = this.Θ_Matrices.get(l);
-                for(int j=1; j<Θ.cols(); j++){  //  Don't update the bias term
-                    for(int i=0; i<Θ.rows(); i++){
-                        Θ.set(i, j, Θ.get(i, j) - (α * D.get(i, j-1)));
-                    }
-                }
-            }
+
+
 
         }
 
