@@ -1,13 +1,13 @@
 package com.vandenbreemen.ai.neuralnet.impl;
 
-import com.vandenbreemen.ai.neuralnet.api.NeuralNet;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NewNeuralNetTest {
 
@@ -45,6 +45,20 @@ public class NewNeuralNetTest {
     @Test
     public void shouldDoTheFuckingBackProp(){
         NewNeuralNet net = createXORNetWithPredictableWeights();
+
+        List<Vector> trainingInputs = new ArrayList<>();
+        trainingInputs.add(linalgProvider.getVector(new double[]{1,1}));
+        trainingInputs.add(linalgProvider.getVector(new double[]{1,0}));
+        trainingInputs.add(linalgProvider.getVector(new double[]{0,1}));
+        trainingInputs.add(linalgProvider.getVector(new double[]{0,0}));
+
+        List<Vector> expectedOutputs = new ArrayList<>();
+        expectedOutputs.add(linalgProvider.getVector(new double[]{0,1}));
+        expectedOutputs.add(linalgProvider.getVector(new double[]{1,0}));
+        expectedOutputs.add(linalgProvider.getVector(new double[]{1,0}));
+        expectedOutputs.add(linalgProvider.getVector(new double[]{0,1}));
+
+        net.train(trainingInputs, expectedOutputs);
 
     }
 
