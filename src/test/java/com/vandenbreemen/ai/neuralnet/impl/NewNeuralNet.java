@@ -59,6 +59,12 @@ public class NewNeuralNet {
             throw new RuntimeException("Number of training inputs not equal to number of training outputs");
         }
 
+        //  Δ matrices for all layers
+        List<Matrix> Δs = new ArrayList<>();
+        for(int l=0; l<Θ_Matrices.size(); l++){
+            Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols()-1, 0.0));
+        }
+
 
         for(int i = 0; i<trainingInputs.size(); i++){   //  "for i=1 to m"
 
@@ -80,11 +86,7 @@ public class NewNeuralNet {
             Vector δ_L = provider.getOperations().subtract(activations.get(activations.size()-1), expectedOutputs.get(i));
             δs.add(0, δ_L);
 
-            //  Δ matrices for all layers
-            List<Matrix> Δs = new ArrayList<>();
-            for(int l=0; l<Θ_Matrices.size(); l++){
-                Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols()-1, 0.0));
-            }
+
 
 
             //  Compute δ(L-1), δ(L-2), ..., δ(1)
@@ -98,8 +100,6 @@ public class NewNeuralNet {
 
                 //  Now work out theta(l) transpose * delta of next layer
                 Matrix Θ_l = Θ_Matrices.get(l);
-                System.out.println("Θ("+l+")="+Θ_l);
-                System.out.println("δ("+(l+1)+")="+δs.get(0));
                 Vector δ = provider.getOperations().matrixVectorProduct(
                         provider.getOperations().subMatrixFromRow(
                                 provider.getOperations().transpose(Θ_l),
@@ -113,47 +113,40 @@ public class NewNeuralNet {
             }
 
             //  Compute the Δs
-            for(int l=0; l<Θ_Matrices.size(); l++){
+            for(int l=Θ_Matrices.size()-1; l>=0; l--){
                 //  Δ(l) := Δ(l) + δ(l+1)(a(l))ᵀ
                 Vector δ_l_plus_1 = δs.get(l+1);
-                System.out.println("δ("+(l+1)+")="+δ_l_plus_1);
-                System.out.println("a("+l+")="+activations.get(l));
                 Matrix deltaL_plus_1_a_l_transpose =
                     provider.getOperations().matrixMatrixProduct(
                             provider.fromVectors(δ_l_plus_1), provider.getOperations().transpose(
                                     provider.fromVectors(activations.get(l))
                             )
                     );
-                System.out.println("δ(l+1)(a(l))ᵀ"+deltaL_plus_1_a_l_transpose);
-                System.out.println("Δ("+l+")="+Δs.get(l));
 
                 Δs.set(l, provider.getOperations().add(Δs.get(l), deltaL_plus_1_a_l_transpose));
 
-                System.out.println("Δ("+l+")="+Δs.get(l));
             }
 
-            System.out.println("TOTAL Δ="+Δs.size());
-            System.out.println(Δs);
+        }
 
-            //  Compute derivatives
-            List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
-            for(int l=0; l<Δs.size(); l++){
-                Matrix D_l = provider.getOperations().function(Δs.get(l), e->e*(1.0/trainingInputs.size()));
-                Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e->e*λ);
 
-                //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
-                for(int j=1; j<D_l.cols(); j++){
-                    for(int r=0; r<D_l.rows(); r++){
-                        D_l.set(r, j, D_l.get(r,j) + λΘ_l.get(r, j));
-                    }
+        //  Compute derivatives
+        List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
+        for(int l=0; l<Δs.size(); l++){
+            Matrix D_l = provider.getOperations().function(Δs.get(l), e->e*(1.0/trainingInputs.size()));
+            Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e->e*λ);
+
+            //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
+            for(int j=1; j<D_l.cols(); j++){
+                for(int r=0; r<D_l.rows(); r++){
+                    D_l.set(r, j, D_l.get(r,j) + λΘ_l.get(r, j));
                 }
-
-                finallyTheFuckingDerivatives.add(D_l);
-                System.out.println("D("+l+")="+D_l);
             }
 
+            finallyTheFuckingDerivatives.add(D_l);
+            System.out.println("D("+l+")="+D_l);
 
-
+            System.out.println("Based on Δ("+l+"), which is "+Δs.get(l));
         }
     }
 
