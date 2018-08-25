@@ -22,6 +22,22 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public Matrix hadamard(Matrix m1, Matrix m2) {
+        if(m1.cols() != m2.cols() || m1.rows() != m2.rows()){
+            throw new RuntimeException("Cannot compute hadamard for matrices of differing size ("+m1.rows()+" x "+m1.cols()+") vs ("+m2.rows()+" x "+m2.cols()+")");
+        }
+
+        double[][] productData = new double[m1.rows()][m1.cols()];
+        for(int i=0; i<m1.cols(); i++){
+            for(int j=0; j<m1.rows(); j++){
+                productData[j][i] = m1.get(j, i) * m2.get(j, i);
+            }
+        }
+
+        return new MatrixImpl(productData);
+    }
+
+    @Override
     public Vector matrixVectorProduct(Matrix m, Vector v) {
         if(v.length() != m.cols()){
             throw new RuntimeException("Vector must have same number of entries as columns ("+m.cols()+")");
@@ -84,6 +100,17 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public Matrix function(Matrix matrix, VectorFunction function) {
+        double[][] result = new double[matrix.rows()][matrix.cols()];
+        for(int i=0; i<matrix.cols(); i++){
+            for(int j=0; j<matrix.rows(); j++){
+                result[j][i] = function.operate(matrix.get(j, i));
+            }
+        }
+        return new MatrixImpl(result);
+    }
+
+    @Override
     public double norm(Vector vector) {
         double sum = 0.0;
         for(int i=0; i<vector.length(); i++){
@@ -116,5 +143,80 @@ public class LinalgOperationsImpl implements LinalgOperations {
             }
         }
         return new MatrixImpl(values);
+    }
+
+    @Override
+    public Matrix matrixMatrixProduct(Matrix m, Matrix n) {
+        if(m.cols() != n.rows()){
+            throw new RuntimeException("Cannot multiply "+m.rows()+" x "+m.cols()+" matrix by "+n.rows() + " x "+n.cols() + " matrix");
+        }
+
+        double[][] result = new double[m.rows()][n.cols()];
+
+        Vector columnVector;
+        Vector vProduct;
+
+        for(int i=0; i<n.cols(); i++){
+            columnVector = n.columnVector(i);
+            vProduct = matrixVectorProduct(m, columnVector);
+
+            for (int j = 0; j < vProduct.length(); j++) {
+                result[j][i] = vProduct.entry(j);
+            }
+
+        }
+
+        return new MatrixImpl(result);
+    }
+
+    @Override
+    public void prependColumn(Matrix m, Vector vector) {
+        MatrixImpl impl = (MatrixImpl) m;
+        double[][] updated = new double[m.rows()][m.cols()+1];
+        for(int j=0; j<m.rows(); j++){
+            updated[j][0] = vector.entry(j);
+        }
+        for(int i = 0; i<m.cols(); i++){
+            for(int j=0; j<m.rows(); j++){
+                updated[j][i+1] = m.get(j, i);
+            }
+        }
+
+        ((MatrixImpl) m).data = updated;
+    }
+
+    @Override
+    public Vector prependEntry(Vector vector, double entry) {
+        double[] values = new double[vector.length()+1];
+        values[0] = entry;
+        for(int i=0; i<vector.length(); i++){
+            values[i+1] = vector.entry(i);
+        }
+        return new VectorImpl(values);
+    }
+
+    @Override
+    public Vector vectorScalarProduct(double scalar, Vector vector) {
+        double[] result = new double[vector.length()];
+        for(int i=0; i<vector.length(); i++){
+            result[i] = scalar * vector.entry(i);
+        }
+        return new VectorImpl(result);
+    }
+
+    @Override
+    public Matrix copy(Matrix matrix) {
+        return transpose(transpose(matrix));
+    }
+
+    @Override
+    public Matrix subMatrixFromRow(Matrix matrix, int rowIndex) {
+        double[][] result = new double[matrix.rows()-1][matrix.cols()];
+        for(int i=0; i<matrix.cols(); i++){
+            for(int j=0; j<matrix.rows()-rowIndex; j++){
+                result[j][i] = matrix.get(j+rowIndex, i);
+            }
+        }
+        return new MatrixImpl(result);
     }
 }

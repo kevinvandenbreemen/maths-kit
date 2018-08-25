@@ -1,6 +1,7 @@
 package com.vandenbreemen.linalg.impl;
 
 import com.vandenbreemen.linalg.api.Matrix;
+import com.vandenbreemen.linalg.api.Vector;
 
 public class MatrixImpl implements Matrix {
 
@@ -10,7 +11,7 @@ public class MatrixImpl implements Matrix {
      * data[0].length = columns
      * </pre>
      */
-    private double[][] data;
+    double[][] data;
 
     MatrixImpl(double[][] values) {
         this.data = values;
@@ -38,5 +39,19 @@ public class MatrixImpl implements Matrix {
     @Override
     public void set(int row, int col, double value) {
         this.data[row][col] = value;
+    }
+
+    @Override
+    public Vector columnVector(int columnIndex) {
+        double[] data = new double[rows()];
+        for(int j=0; j<rows(); j++){
+            data[j] = this.data[j][columnIndex];
+        }
+        return new VectorImpl(data);
+    }
+
+    @Override
+    public String toString() {
+        return asString();
     }
 }

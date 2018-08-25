@@ -41,4 +41,47 @@ public class LinalgProviderImpl implements LinalgProvider {
     public LinalgOperations getOperations() {
         return new LinalgOperationsImpl();
     }
+
+    @Override
+    public Vector vectorOf(double value, int numRows) {
+        double[] values = new double[numRows];
+        for(int i=0; i<numRows; i++){
+            values[i] = value;
+        }
+        return new VectorImpl(values);
+    }
+
+    @Override
+    public Matrix fromVectors(Vector... vectors) {
+        double[][] result = new double[vectors[0].length()][vectors.length];
+        for(int j=0; j<vectors.length; j++) {
+            for (int i = 0; i < vectors[0].length(); i++) {
+                result[i][j] = vectors[j].entry(i);
+            }
+        }
+        return new MatrixImpl(result);
+    }
+
+    @Override
+    public Vector[] toColumnVectors(Matrix matrix) {
+        Vector[] ret = new Vector[matrix.cols()];
+        for(int i=0; i<matrix.cols(); i++){
+            ret[i] = matrix.columnVector(i);
+        }
+        return ret;
+    }
+
+    @Override
+    public double[] unroll(Matrix m) {
+        double[] ret = new double[m.rows() * m.cols()];
+
+        int index = 0;
+        for(int i=0; i<m.cols(); i++){
+            for (int j=0; j<m.rows(); j++){
+                ret[index] = m.get(j, i);
+                index ++;
+            }
+        }
+        return ret;
+    }
 }

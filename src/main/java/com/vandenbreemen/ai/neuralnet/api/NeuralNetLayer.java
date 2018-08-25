@@ -1,5 +1,6 @@
 package com.vandenbreemen.ai.neuralnet.api;
 
+import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
 
 public interface NeuralNetLayer {
@@ -8,9 +9,7 @@ public interface NeuralNetLayer {
 
     Vector getWeightedInput(Vector input);
 
-    Vector getDerivativeOfActivation(Vector input);
-
-    Vector getOutputError(TrainingExample example);
+    Matrix getWeightMatrixTranspose();
 
     int getNumInputs();
 

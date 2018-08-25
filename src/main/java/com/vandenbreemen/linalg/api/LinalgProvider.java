@@ -31,4 +31,17 @@ public interface LinalgProvider {
      * @return
      */
     LinalgOperations getOperations();
+
+    Vector vectorOf(double value, int numRows);
+
+    Matrix fromVectors(Vector...vectors);
+
+    Vector[] toColumnVectors(Matrix matrix);
+
+    /**
+     * Unroll the matrix (get all of its values as an array).  You should make no assumptions about the order of values returned
+     * @param m
+     * @return
+     */
+    double[] unroll(Matrix m);
 }

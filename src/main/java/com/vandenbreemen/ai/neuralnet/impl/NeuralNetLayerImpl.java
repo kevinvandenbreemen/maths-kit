@@ -2,7 +2,6 @@ package com.vandenbreemen.ai.neuralnet.impl;
 
 import com.vandenbreemen.ai.neuralnet.api.CostFunction;
 import com.vandenbreemen.ai.neuralnet.api.NeuralNetLayer;
-import com.vandenbreemen.ai.neuralnet.api.TrainingExample;
 import com.vandenbreemen.linalg.api.LinalgProvider;
 import com.vandenbreemen.linalg.api.Matrix;
 import com.vandenbreemen.linalg.api.Vector;
@@ -49,23 +48,9 @@ public class NeuralNetLayerImpl implements NeuralNetLayer {
     }
 
     @Override
-    public Vector getDerivativeOfActivation(Vector input) {
-        Vector weightedInputs = getWeightedInput(input);
-        return linalgProvider.getOperations().function(weightedInputs, activationFunctionDerivative);
+    public Matrix getWeightMatrixTranspose() {
+        return linalgProvider.getOperations().transpose(this.weightMatrix);
     }
-
-    @Override
-    public Vector getOutputError(TrainingExample example){
-        if(example.getActualOutput() == null){
-            throw new RuntimeException("Missing:  Actual Output to compare against");
-        }
-
-        Vector errorGradient = costFunction.gradient(example);
-        Vector weightedInput = getWeightedInput(example.getInput());
-        Vector activationDerivative = linalgProvider.getOperations().function(weightedInput, activationFunctionDerivative);
-        return linalgProvider.getOperations().hadamard(errorGradient, activationDerivative);
-    }
-
 
 
     @Override
