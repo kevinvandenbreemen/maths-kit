@@ -148,6 +148,42 @@ public class NewNeuralNet {
 
             System.out.println("Based on Δ("+l+"), which is "+Δs.get(l));
         }
+
+        //  Now do the goddam cost function
+    }
+
+    private double computeCost(List<Vector> trainingInputs, List<Vector> expectedResults, List<Vector> hθ_outputs, double λ){
+        double cost = 0.;
+        for(int i=0; i<trainingInputs.size(); i++){
+
+            Vector log_hθ_x = provider.getOperations().function(hθ_outputs.get(i), Math::log);
+            Vector log_1_minus_hθ_x = provider.getOperations().function(
+                        provider.getOperations().subtract(
+                                provider.vectorOf(1.0, hθ_outputs.get(i).length()),
+                                hθ_outputs.get(i)),
+                            Math::log);
+            Vector _1_minus_y = provider.getOperations().subtract(
+                    provider.vectorOf(1.0, expectedResults.get(i).length()), expectedResults.get(i)
+            );
+
+            for(int k=0; k<expectedResults.get(0).length(); k++){
+                double innerSum = expectedResults.get(i).entry(k) * log_hθ_x.entry(k) + (_1_minus_y.entry(k) * log_1_minus_hθ_x.entry(k));
+            }
+        }
+        cost *= (-1.0/trainingInputs.size());
+
+        double philmontFactor = 0.0;
+        for (int l=0; l<Θ_Matrices.size(); l++){
+            Matrix Θ = Θ_Matrices.get(l);
+            for(int j=1; j<Θ.cols(); j++){
+                for (int r=0; r<Θ.rows(); r++){
+                    philmontFactor += Math.pow(Θ.get(r, j), 2);
+                }
+            }
+        }
+
+        philmontFactor *= λ / (2.0*trainingInputs.size());
+        return cost + philmontFactor;
     }
 
 
