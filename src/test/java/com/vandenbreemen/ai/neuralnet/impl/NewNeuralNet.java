@@ -54,102 +54,126 @@ public class NewNeuralNet {
     public void train(List<Vector> trainingInputs, List<Vector> expectedOutputs){
 
         double λ = 1.1; //  TODO    Parameterize!
+        double α = 0.1; //  TODO    Parameterize!
 
         if(trainingInputs.size() != expectedOutputs.size()){
             throw new RuntimeException("Number of training inputs not equal to number of training outputs");
         }
 
-        //  Δ matrices for all layers
-        List<Matrix> Δs = new ArrayList<>();
-        for(int l=0; l<Θ_Matrices.size(); l++){
-            Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols()-1, 0.0));
-        }
+        int numIterations = 10;
 
 
-        for(int i = 0; i<trainingInputs.size(); i++){   //  "for i=1 to m"
 
-            //  Activations (0-based)
-            List<Vector> activations = new ArrayList<>();
+        for(int iteration = 0; iteration < numIterations; iteration++) {
 
-            //  Set a(1) = x(i)
-            activations.add(trainingInputs.get(i));
-            Vector activationVector = trainingInputs.get(i);
+            List<Vector> hθ_outputs = new ArrayList<>();
+            for(Vector input : trainingInputs){
+                hθ_outputs.add(compute_hTheta(input));
+            }
+            double cost = computeCost(trainingInputs, expectedOutputs, hθ_outputs, λ);
+            System.out.println("cost="+cost);
 
-            //  Perform forward propagation to compute a(l) for l = 2,3,...L
-            for(Matrix Θ : Θ_Matrices){
-                activationVector = computeActivations(Θ, activationVector);
-                activations.add(activationVector);
+            //  Δ matrices for all layers
+            List<Matrix> Δs = new ArrayList<>();
+            for (int l = 0; l < Θ_Matrices.size(); l++) {
+                Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols() - 1, 0.0));
             }
 
-            //  Using y(i), compute δ(L) = a(L) - y(i)
-            List<Vector> δs = new ArrayList<>();
-            Vector δ_L = provider.getOperations().subtract(activations.get(activations.size()-1), expectedOutputs.get(i));
-            δs.add(0, δ_L);
+
+            for (int i = 0; i < trainingInputs.size(); i++) {   //  "for i=1 to m"
+
+                //  Activations (0-based)
+                List<Vector> activations = new ArrayList<>();
+
+                //  Set a(1) = x(i)
+                activations.add(trainingInputs.get(i));
+                Vector activationVector = trainingInputs.get(i);
+
+                //  Perform forward propagation to compute a(l) for l = 2,3,...L
+                for (Matrix Θ : Θ_Matrices) {
+                    activationVector = computeActivations(Θ, activationVector);
+                    activations.add(activationVector);
+                }
+
+                //  Using y(i), compute δ(L) = a(L) - y(i)
+                List<Vector> δs = new ArrayList<>();
+                Vector δ_L = provider.getOperations().subtract(activations.get(activations.size() - 1), expectedOutputs.get(i));
+                δs.add(0, δ_L);
 
 
+                //  Compute δ(L-1), δ(L-2), ..., δ(1)
+                for (int l = Θ_Matrices.size() - 1; l >= 0; l--) {
 
+                    //  First compute g' of activations at activations coming out of layer l
+                    Vector a_l = activations.get(l + 1);
+                    Vector _1_minus_a_l = provider.getOperations().subtract(
+                            provider.vectorOf(1.0, a_l.length()), a_l);
+                    Vector gPrime_z_l = provider.getOperations().hadamard(a_l, _1_minus_a_l);
 
-            //  Compute δ(L-1), δ(L-2), ..., δ(1)
-            for(int l = Θ_Matrices.size()-1; l>=0; l--){
-
-                //  First compute g' of activations at activations coming out of layer l
-                Vector a_l = activations.get(l+1);
-                Vector _1_minus_a_l = provider.getOperations().subtract(
-                        provider.vectorOf(1.0, a_l.length()), a_l);
-                Vector gPrime_z_l = provider.getOperations().hadamard(a_l, _1_minus_a_l);
-
-                //  Now work out theta(l) transpose * delta of next layer
-                Matrix Θ_l = Θ_Matrices.get(l);
-                Vector δ = provider.getOperations().matrixVectorProduct(
-                        provider.getOperations().subMatrixFromRow(
-                                provider.getOperations().transpose(Θ_l),
-                                1
-                        )
-                            ,
-                        δs.get(0)
-                );
-                δs.add(0, δ);
-
-            }
-
-            //  Compute the Δs
-            for(int l=Θ_Matrices.size()-1; l>=0; l--){
-                //  Δ(l) := Δ(l) + δ(l+1)(a(l))ᵀ
-                Vector δ_l_plus_1 = δs.get(l+1);
-                Matrix deltaL_plus_1_a_l_transpose =
-                    provider.getOperations().matrixMatrixProduct(
-                            provider.fromVectors(δ_l_plus_1), provider.getOperations().transpose(
-                                    provider.fromVectors(activations.get(l))
+                    //  Now work out theta(l) transpose * delta of next layer
+                    Matrix Θ_l = Θ_Matrices.get(l);
+                    Vector δ = provider.getOperations().matrixVectorProduct(
+                            provider.getOperations().subMatrixFromRow(
+                                    provider.getOperations().transpose(Θ_l),
+                                    1
                             )
+                            ,
+                            δs.get(0)
                     );
+                    δs.add(0, δ);
 
-                Δs.set(l, provider.getOperations().add(Δs.get(l), deltaL_plus_1_a_l_transpose));
+                }
+
+                //  Compute the Δs
+                for (int l = Θ_Matrices.size() - 1; l >= 0; l--) {
+                    //  Δ(l) := Δ(l) + δ(l+1)(a(l))ᵀ
+                    Vector δ_l_plus_1 = δs.get(l + 1);
+                    Matrix deltaL_plus_1_a_l_transpose =
+                            provider.getOperations().matrixMatrixProduct(
+                                    provider.fromVectors(δ_l_plus_1), provider.getOperations().transpose(
+                                            provider.fromVectors(activations.get(l))
+                                    )
+                            );
+
+                    Δs.set(l, provider.getOperations().add(Δs.get(l), deltaL_plus_1_a_l_transpose));
+
+                }
 
             }
 
-        }
 
+            //  Compute derivatives
+            List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
+            for (int l = 0; l < Δs.size(); l++) {
+                Matrix D_l = provider.getOperations().function(Δs.get(l), e -> e * (1.0 / trainingInputs.size()));
+                Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e -> e * λ);
 
-        //  Compute derivatives
-        List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
-        for(int l=0; l<Δs.size(); l++){
-            Matrix D_l = provider.getOperations().function(Δs.get(l), e->e*(1.0/trainingInputs.size()));
-            Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e->e*λ);
+                //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
+                for (int j = 1; j < D_l.cols(); j++) {
+                    for (int r = 0; r < D_l.rows(); r++) {
+                        D_l.set(r, j, D_l.get(r, j) + λΘ_l.get(r, j));
+                    }
+                }
 
-            //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
-            for(int j=1; j<D_l.cols(); j++){
-                for(int r=0; r<D_l.rows(); r++){
-                    D_l.set(r, j, D_l.get(r,j) + λΘ_l.get(r, j));
+                finallyTheFuckingDerivatives.add(D_l);
+                System.out.println("D(" + l + ")=" + D_l);
+
+                System.out.println("Based on Δ(" + l + "), which is " + Δs.get(l));
+            }
+
+            //  Now update the goddam weights!
+            for(int l=0; l<finallyTheFuckingDerivatives.size(); l++){
+                Matrix D = finallyTheFuckingDerivatives.get(l);
+                Matrix Θ = this.Θ_Matrices.get(l);
+                for(int j=1; j<Θ.cols(); j++){  //  Don't update the bias term
+                    for(int i=0; i<Θ.rows(); i++){
+                        Θ.set(i, j, Θ.get(i, j) - (α * D.get(i, j-1)));
+                    }
                 }
             }
 
-            finallyTheFuckingDerivatives.add(D_l);
-            System.out.println("D("+l+")="+D_l);
-
-            System.out.println("Based on Δ("+l+"), which is "+Δs.get(l));
         }
 
-        //  Now do the goddam cost function
     }
 
     private double computeCost(List<Vector> trainingInputs, List<Vector> expectedResults, List<Vector> hθ_outputs, double λ){
