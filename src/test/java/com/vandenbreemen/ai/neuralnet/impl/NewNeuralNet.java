@@ -77,6 +77,13 @@ public class NewNeuralNet {
             Vector δ_L = provider.getOperations().subtract(activations.get(activations.size()-1), expectedOutputs.get(i));
             δs.add(0, δ_L);
 
+            //  Δ matrices for all layers
+            List<Matrix> Δs = new ArrayList<>();
+            for(int l=0; l<Θ_Matrices.size(); l++){
+                Δs.add(provider.matrixOf(Θ_Matrices.get(l).rows(), Θ_Matrices.get(l).cols()-1, 0.0));
+            }
+
+
             //  Compute δ(L-1), δ(L-2), ..., δ(1)
             for(int l = Θ_Matrices.size()-1; l>=0; l--){
 
@@ -101,6 +108,33 @@ public class NewNeuralNet {
                 δs.add(0, δ);
 
             }
+
+            //  Compute the Δs
+            for(int l=0; l<Θ_Matrices.size(); l++){
+                //  Δ(l) := Δ(l) + δ(l+1)(a(l))ᵀ
+                Vector δ_l_plus_1 = δs.get(l+1);
+                System.out.println("δ("+(l+1)+")="+δ_l_plus_1);
+                System.out.println("a("+l+")="+activations.get(l));
+                Matrix deltaL_plus_1_a_l_transpose =
+                    provider.getOperations().matrixMatrixProduct(
+                            provider.fromVectors(δ_l_plus_1), provider.getOperations().transpose(
+                                    provider.fromVectors(activations.get(l))
+                            )
+                    );
+                System.out.println("δ(l+1)(a(l))ᵀ"+deltaL_plus_1_a_l_transpose);
+                System.out.println("Δ("+l+")="+Δs.get(l));
+
+                Δs.set(l, provider.getOperations().add(Δs.get(l), deltaL_plus_1_a_l_transpose));
+
+                System.out.println("Δ("+l+")="+Δs.get(l));
+            }
+
+            System.out.println("TOTAL Δ="+Δs.size());
+            System.out.println(Δs);
+
+            //  Compute derivatives
+
+
         }
     }
 
