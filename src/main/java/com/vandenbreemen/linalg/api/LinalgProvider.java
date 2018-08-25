@@ -18,6 +18,15 @@ public interface LinalgProvider {
     Matrix getMatrix(int rows, int columns);
 
     /**
+     * Create matrix of rows x columns filled with the given value
+     * @param rows
+     * @param columns
+     * @param value
+     * @return
+     */
+    Matrix matrixOf(int rows, int columns, double value);
+
+    /**
      * Get vector with the given set of entries
      * @param entries
      * @return

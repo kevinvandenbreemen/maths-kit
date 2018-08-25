@@ -24,6 +24,18 @@ public class LinalgProviderImpl implements LinalgProvider {
     }
 
     @Override
+    public Matrix matrixOf(int rows, int columns, double value) {
+        Matrix ret = new MatrixImpl(rows, columns);
+        for(int j=0; j<columns; j++){
+            for(int i = 0; i<rows; i++){
+                ret.set(i, j, value);
+            }
+        }
+
+        return ret;
+    }
+
+    @Override
     public Vector getVector(double[] entries) {
         return new VectorImpl(entries);
     }

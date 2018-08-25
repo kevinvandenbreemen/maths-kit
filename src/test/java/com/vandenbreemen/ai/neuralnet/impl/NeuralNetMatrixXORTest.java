@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.DoubleStream;
 
 /**
  * This will be a test to demonstrate back propagation implemented using matrices
@@ -82,6 +81,20 @@ public class NeuralNetMatrixXORTest {
     }
 
     @Test
+    public void shouldComputeActivationsOfHiddenLayerUsingNewNeuralNet(){
+
+        trainingInputs = linalgProvider.getMatrix(new double[][]{
+                new double[]{1, 1, 0, 0},
+                new double[]{1, 0, 1, 0}
+        });
+
+        FuckedUpNeuralNet newNet = new FuckedUpNeuralNet(linalgProvider);
+        newNet.addLayer(trainingInputs.rows(), 3);
+
+        System.out.println(newNet.processInputs(trainingInputs));
+    }
+
+    @Test
     public void shouldComputeActivationsOfOutputLayer(){
         Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
 
@@ -101,6 +114,21 @@ public class NeuralNetMatrixXORTest {
                 1.0 / (1.0 + Math.exp(-1.0 * entry))
         );
         System.out.println(activationsOutput);
+    }
+
+    @Test
+    public void shouldComputeActivationsOfOutputLayerWithNewNetwork(){
+
+        trainingInputs = linalgProvider.getMatrix(new double[][]{
+                new double[]{1, 1, 0, 0},
+                new double[]{1, 0, 1, 0}
+        });
+
+        FuckedUpNeuralNet net = new FuckedUpNeuralNet(linalgProvider);
+        net.addLayer(2, 3);
+        net.addLayer(3, 1);
+
+        System.out.println(net.processInputs(trainingInputs));
     }
 
     @Test
@@ -139,6 +167,40 @@ public class NeuralNetMatrixXORTest {
     }
 
     @Test
+    public void shouldComputeHiddenLayerDeltas(){
+        Matrix z_2Matrix = linalgProvider.getOperations().matrixMatrixProduct(theta1, trainingInputs);
+
+        Matrix activationsLayer2 = linalgProvider.getOperations().function(z_2Matrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+
+        //  Add bias for the activations of the output layer
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+        linalgProvider.getOperations().prependColumn(activationsLayer2, linalgProvider.vectorOf(1.0, activationsLayer2.rows()));
+        activationsLayer2 = linalgProvider.getOperations().transpose(activationsLayer2);
+
+        System.out.println(activationsLayer2);
+
+        Matrix z_OutMatrix = linalgProvider.getOperations().matrixMatrixProduct(theta2, activationsLayer2);
+        Matrix hThetaXMatrix = linalgProvider.getOperations().function(z_OutMatrix, (entry)->
+                1.0 / (1.0 + Math.exp(-1.0 * entry))
+        );
+        System.out.println("HTHeta:"+hThetaXMatrix);
+
+        Vector[] yVectors = linalgProvider.toColumnVectors(trainingOutputs);
+        Vector[] hThetaVectors = linalgProvider.toColumnVectors(hThetaXMatrix);
+
+        Vector[] deltaVectors = new Vector[yVectors.length];
+        for(int i=0; i<yVectors.length; i++){
+            deltaVectors[i] = linalgProvider.getOperations().subtract(hThetaVectors[i], yVectors[i]);
+        }
+        Matrix outputDeltaMatrix = linalgProvider.fromVectors(deltaVectors);
+
+
+
+    }
+
+    @Test
     public void shouldComputeCostFunction(){
 
         //  Arrange
@@ -173,7 +235,22 @@ public class NeuralNetMatrixXORTest {
         System.out.println(cost);
     }
 
+    @Test
+    public void justTrainTheGoddamNeuralNet(){
 
+        trainingInputs = linalgProvider.getMatrix(new double[][]{
+                new double[]{1, 1, 0, 0},
+                new double[]{1, 0, 1, 0}
+        });
+
+        FuckedUpNeuralNet net = new FuckedUpNeuralNet(linalgProvider);
+
+        net.addLayer(2, 3);
+        net.addLayer(3, 1);
+
+        net.train(trainingInputs, trainingOutputs);
+
+    }
 
 
     //  TODO    If this does NOT work do NOT give up.  You will need to contrive a series of theta metrices as well as expected outputs and training inputs/outputs and
