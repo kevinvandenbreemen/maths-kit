@@ -46,6 +46,8 @@ public class NewNeuralNetTest {
     public void shouldDoTheFuckingBackProp(){
         NewNeuralNet net = createXORNetWithPredictableWeights();
 
+
+
         List<Vector> trainingInputs = new ArrayList<>();
         trainingInputs.add(linalgProvider.getVector(new double[]{1,1}));
         trainingInputs.add(linalgProvider.getVector(new double[]{1,0}));
@@ -58,7 +60,20 @@ public class NewNeuralNetTest {
         expectedOutputs.add(linalgProvider.getVector(new double[]{1,0}));
         expectedOutputs.add(linalgProvider.getVector(new double[]{0,1}));
 
+        List<Vector> beforeTraining = new ArrayList<>();
+        for (Vector input : trainingInputs){
+            beforeTraining.add(net.compute_hTheta(input));
+        }
+
         net.train(trainingInputs, expectedOutputs);
+
+        System.out.println("RESULTS AFTER TRAINING");
+        for (Vector input : trainingInputs){
+            System.out.println(input);
+            System.out.println(net.compute_hTheta(input));
+        }
+
+        System.out.println("VS:\n"+beforeTraining);
 
     }
 

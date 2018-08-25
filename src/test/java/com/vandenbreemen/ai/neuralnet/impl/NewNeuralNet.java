@@ -54,13 +54,13 @@ public class NewNeuralNet {
     public void train(List<Vector> trainingInputs, List<Vector> expectedOutputs){
 
         double λ = 1.1; //  TODO    Parameterize!
-        double α = 0.1; //  TODO    Parameterize!
+        double α = 0.03; //  TODO    Parameterize!
 
         if(trainingInputs.size() != expectedOutputs.size()){
             throw new RuntimeException("Number of training inputs not equal to number of training outputs");
         }
 
-        int numIterations = 10;
+        int numIterations = 60;
 
 
 
@@ -156,9 +156,6 @@ public class NewNeuralNet {
                 }
 
                 finallyTheFuckingDerivatives.add(D_l);
-                System.out.println("D(" + l + ")=" + D_l);
-
-                System.out.println("Based on Δ(" + l + "), which is " + Δs.get(l));
             }
 
             //  Now update the goddam weights!
