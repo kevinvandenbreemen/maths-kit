@@ -27,6 +27,8 @@ public interface LinalgOperations {
 
     void prependColumn(Matrix m, Vector vector);
 
+    Vector prependEntry(Vector vector, double entry);
+
     Vector vectorScalarProduct(double scalar, Vector vector);
 
     Matrix copy(Matrix matrix);

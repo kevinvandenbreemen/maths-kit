@@ -186,6 +186,16 @@ public class LinalgOperationsImpl implements LinalgOperations {
     }
 
     @Override
+    public Vector prependEntry(Vector vector, double entry) {
+        double[] values = new double[vector.length()+1];
+        values[0] = entry;
+        for(int i=0; i<vector.length(); i++){
+            values[i+1] = vector.entry(i);
+        }
+        return new VectorImpl(values);
+    }
+
+    @Override
     public Vector vectorScalarProduct(double scalar, Vector vector) {
         double[] result = new double[vector.length()];
         for(int i=0; i<vector.length(); i++){

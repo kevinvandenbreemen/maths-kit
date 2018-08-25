@@ -31,6 +31,16 @@ public class VectorImplTest {
     }
 
     @Test
+    public void shouldPrependEntry(){
+        Vector v1 = provider.getVector(new double[]{2,3});
+        v1 = provider.getOperations().prependEntry(v1, 1.0);
+        assertEquals(3, v1.length());
+        assertEquals(1.0, v1.entry(0));
+        assertEquals(2.0, v1.entry(1));
+        assertEquals(3.0, v1.entry(2));
+    }
+
+    @Test
     public void shouldAddVectors(){
 
         //  Arrange
