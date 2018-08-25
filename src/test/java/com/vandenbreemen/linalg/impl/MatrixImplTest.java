@@ -206,6 +206,24 @@ public class MatrixImplTest {
     }
 
     @Test
+    public void shouldAddMatrices(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+        Matrix n = provider.getMatrix(new double[][]{
+                new double[]{2.0, 2.0},
+                new double[]{2.0, 2.0}
+        });
+
+        Matrix up = provider.getOperations().add(m,n);
+        assertEquals(3.0, up.get(0,0));
+        assertEquals(5.0, up.get(1,0));
+        assertEquals(4.0, up.get(0,1));
+        assertEquals(6.0, up.get(1,1));
+    }
+
+    @Test
     public void shouldHadamardMatrices(){
         Matrix m = provider.getMatrix(new double[][]{
                 new double[]{1.0, 2.0},

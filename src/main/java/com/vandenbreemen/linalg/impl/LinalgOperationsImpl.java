@@ -69,6 +69,26 @@ public class LinalgOperationsImpl implements LinalgOperations {
         return new VectorImpl(result);
     }
 
+    private String dimensionDifference(Matrix m1, Matrix m2){
+        return m1.rows()+" x "+m1.cols() + " vs "+m2.rows()+" x "+m2.cols();
+    }
+
+    @Override
+    public Matrix add(Matrix m1, Matrix m2) {
+        if(m1.cols() != m2.cols()||m1.rows() != m2.rows()){
+            throw new RuntimeException("Cannot add matrices of differing dimensions ("+dimensionDifference(m1, m2)+")");
+        }
+
+        double[][] result = new double[m1.rows()][m1.cols()];
+        for(int j=0; j<m1.cols(); j++){
+            for(int i=0; i<m1.rows(); i++){
+                result[i][j] = m1.get(i,j)+m2.get(i,j);
+            }
+        }
+
+        return new MatrixImpl(result);
+    }
+
     @Override
     public Matrix randomEntries(Matrix matrix) {
         Random random = new Random(System.nanoTime());

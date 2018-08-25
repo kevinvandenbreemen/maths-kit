@@ -9,6 +9,8 @@ public interface LinalgOperations {
 
     Vector add(Vector v1, Vector v2);
 
+    Matrix add(Matrix m1, Matrix m2);
+
     Matrix randomEntries(Matrix matrix);
 
     Vector randomEntries(Vector vector);
