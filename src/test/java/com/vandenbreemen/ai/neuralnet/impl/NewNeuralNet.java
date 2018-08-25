@@ -52,6 +52,9 @@ public class NewNeuralNet {
     }
 
     public void train(List<Vector> trainingInputs, List<Vector> expectedOutputs){
+
+        double λ = 1.1; //  TODO    Parameterize!
+
         if(trainingInputs.size() != expectedOutputs.size()){
             throw new RuntimeException("Number of training inputs not equal to number of training outputs");
         }
@@ -133,6 +136,22 @@ public class NewNeuralNet {
             System.out.println(Δs);
 
             //  Compute derivatives
+            List<Matrix> finallyTheFuckingDerivatives = new ArrayList<>();
+            for(int l=0; l<Δs.size(); l++){
+                Matrix D_l = provider.getOperations().function(Δs.get(l), e->e*(1.0/trainingInputs.size()));
+                Matrix λΘ_l = provider.getOperations().function(Θ_Matrices.get(l), e->e*λ);
+
+                //  For j != 0, D_l(i,r) = same + lambda(theta_l(i,r))
+                for(int j=1; j<D_l.cols(); j++){
+                    for(int r=0; r<D_l.rows(); r++){
+                        D_l.set(r, j, D_l.get(r,j) + λΘ_l.get(r, j));
+                    }
+                }
+
+                finallyTheFuckingDerivatives.add(D_l);
+                System.out.println("D("+l+")="+D_l);
+            }
+
 
 
         }
