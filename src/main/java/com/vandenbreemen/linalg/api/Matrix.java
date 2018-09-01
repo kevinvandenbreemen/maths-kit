@@ -14,6 +14,8 @@ public interface Matrix {
 
     void set(int row, int col, double value);
 
+    double[] getRow(int rowIndex);
+
     default String asString(){
         StringBuilder bld = new StringBuilder(getClass().getSimpleName()).append(":\n");
         for(int i=0; i<rows(); i++){

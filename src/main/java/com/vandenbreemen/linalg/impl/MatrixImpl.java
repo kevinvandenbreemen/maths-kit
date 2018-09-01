@@ -42,6 +42,11 @@ public class MatrixImpl implements Matrix {
     }
 
     @Override
+    public double[] getRow(int rowIndex) {
+        return this.data[rowIndex];
+    }
+
+    @Override
     public Vector columnVector(int columnIndex) {
         double[] data = new double[rows()];
         for(int j=0; j<rows(); j++){

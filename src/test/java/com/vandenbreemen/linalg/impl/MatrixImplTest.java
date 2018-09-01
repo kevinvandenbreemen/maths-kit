@@ -241,4 +241,16 @@ public class MatrixImplTest {
         assertEquals(8.0, up.get(1,1));
     }
 
+    @Test
+    public void shouldGetRow(){
+        Matrix m = provider.getMatrix(new double[][]{
+                new double[]{1.0, 2.0},
+                new double[]{3.0, 4.0}
+        });
+
+        double[] row = m.getRow(0);
+
+        assertArrayEquals(new double[]{1.0, 2.0}, row, 0.000000001);
+    }
+
 }
