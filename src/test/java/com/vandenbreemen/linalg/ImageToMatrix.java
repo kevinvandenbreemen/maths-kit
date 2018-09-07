@@ -1,6 +1,8 @@
 package com.vandenbreemen.linalg;
 
 import com.vandenbreemen.linalg.api.LinalgProvider;
+import com.vandenbreemen.linalg.api.Matrix;
+import com.vandenbreemen.linalg.api.Vector;
 import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
 
 import javax.imageio.ImageIO;
@@ -11,8 +13,16 @@ public class ImageToMatrix {
 
     private LinalgProvider linalgProvider;
 
+    /**
+     * Transform for conversion to grayscale
+     */
+    private Matrix linearTransformMatrix;
+
     public ImageToMatrix(LinalgProvider linalgProvider) {
         this.linalgProvider = linalgProvider;
+        this.linearTransformMatrix = linalgProvider.getMatrix(new double[][]{
+                new double[]{0.2126, 0.7152, 0.0722}
+        });
     }
 
     protected BufferedImage getBufferedImage(InputStream inputStream) {
@@ -53,5 +63,25 @@ public class ImageToMatrix {
         }
 
         return ret;
+    }
+
+    //  Grayscale conversion as per https://stackoverflow.com/a/17619494/2328196
+    public Vector getGrayscaleVector(InputStream resourceAsStream) {
+        Matrix imageMatrix = linalgProvider.getMatrix(getRBBArray(resourceAsStream));
+        imageMatrix = linalgProvider.getOperations().function(imageMatrix, (e)->e/255.0);
+
+        Matrix linearMatrix = linalgProvider.getOperations().matrixMatrixProduct(linearTransformMatrix, imageMatrix);
+
+        linearMatrix = linalgProvider.getOperations().function(linearMatrix, e->{
+            if(e <= 0.0031308){
+                return 12.92 * e;
+            }
+            else{
+                return (1.055 * (Math.pow(e, (1.0/2.5)))) - 0.055;
+            }
+        });
+
+        return linalgProvider.getVector(linalgProvider.unroll(linearMatrix));
+
     }
 }
