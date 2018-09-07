@@ -44,6 +44,8 @@ public class ImageToMatrixTest {
         assertEquals("Pixel Dim", 100, rgbArray[0].length);
         assertEquals(0.0, rgbArray[0][91]);
         assertEquals(255.0, rgbArray[0][0]);
+        assertEquals(255.0, rgbArray[1][0]);
+        assertEquals(255.0, rgbArray[2][0]);
     }
 
 }
