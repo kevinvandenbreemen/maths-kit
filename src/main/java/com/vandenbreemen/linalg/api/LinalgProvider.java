@@ -53,4 +53,13 @@ public interface LinalgProvider {
      * @return
      */
     double[] unroll(Matrix m);
+
+    /**
+     * Convert the given vector into matrix of the given dimensions
+     * @param vector
+     * @param rows
+     * @param cols
+     * @return
+     */
+    Matrix reshape(Vector vector, int rows, int cols);
 }

@@ -69,4 +69,15 @@ public class LinalgProviderImplTest {
         assertEquals("Entries", 6.0, copy.entry(1));
     }
 
+    @Test
+    public void shouldReshape(){
+        Vector unrolled = linalgProvider.getVector(new double[]{1, 2, 3, 4});
+        Matrix matrix = linalgProvider.reshape(unrolled, 2,2);
+
+        assertEquals(1.0, matrix.get(0,0));
+        assertEquals(2.0, matrix.get(0,1));
+        assertEquals(3.0, matrix.get(1,0));
+        assertEquals(4.0, matrix.get(1,1));
+    }
+
 }

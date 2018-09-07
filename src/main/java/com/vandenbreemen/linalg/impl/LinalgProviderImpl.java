@@ -96,4 +96,24 @@ public class LinalgProviderImpl implements LinalgProvider {
         }
         return ret;
     }
+
+    @Override
+    public Matrix reshape(Vector vector, int rows, int cols) {
+        if(rows*cols != vector.length()){
+            throw new RuntimeException("Incompatible dimension:  vector of "+vector.length()+" entries vs ("+rows+" x "+cols+")");
+        }
+
+        double[][] raw = new double[rows][cols];
+
+        int index = 0;
+
+        for(int i=0; i<rows; i++){
+            for (int j=0; j<cols; j++){
+                raw[i][j] = vector.entry(index);
+                index++;
+            }
+        }
+
+        return getMatrix(raw);
+    }
 }
