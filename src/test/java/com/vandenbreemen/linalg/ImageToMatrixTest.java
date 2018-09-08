@@ -7,8 +7,6 @@ import com.vandenbreemen.linalg.impl.LinalgProviderImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 
